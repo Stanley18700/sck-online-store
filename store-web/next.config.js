@@ -4,12 +4,8 @@ const STORE_SERVICE_URL =
 
 const nextConfig = {
   reactStrictMode: true,
-  images: {
-    domains: ['tailwindui.com', 'localhost']
-  },
-  env: {
-    storeServiceURL: STORE_SERVICE_URL
-  }
+  images: { domains: ['tailwindui.com', 'localhost'] },
+  env: { storeServiceURL: STORE_SERVICE_URL },
+  output: 'standalone'
 }
-
 module.exports = nextConfig

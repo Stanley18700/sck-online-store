@@ -1,7 +1,34 @@
+# Build artifacts
 vendor/
-
 **/coverage.out
 **/coverage.xml
 **/report.xml
-
 cmd/docs
+
+# Generated swagger docs are regenerated inside Docker via `swag init`
+# (keeps the build context small and avoids stale committed docs)
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# CI / docs
+.git/
+.gitignore
+.gitattributes
+*.md
+CLAUDE.md
+README.md
+LICENSE
+
+# Test fixtures not needed at build time
+**/*_test.go
+**/testdata/
+**/*.test
+**/*.out

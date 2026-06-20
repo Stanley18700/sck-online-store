@@ -1,2 +1,38 @@
+# Build artifacts
 .next
 node_modules
+out
+dist
+build
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# CI / docs / tooling
+.git/
+.gitignore
+.gitattributes
+*.md
+CLAUDE.md
+README.md
+LICENSE
+
+# Cypress: the `cypress/` directory MUST stay in the build context.
+# Its `support/commands.ts` contains `/// <reference types="cypress" />`
+# which registers cypress global types (describe, it, cy.mount) used
+# by `src/__test__/*.cy.tsx`. We only exclude the heavy outputs.
+cypress/videos/
+cypress/screenshots/
+cypress.config.ts
+
+# Test output and caches
+.turbo
+coverage
+.eslintcache
