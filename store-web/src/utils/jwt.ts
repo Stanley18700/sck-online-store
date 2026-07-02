@@ -5,3 +5,12 @@ export const decodeJWT = (token: string) => {
   )
   return payloadJson
 }
+
+export const isTokenExpired = (token: string) => {
+  try {
+    const { exp } = decodeJWT(token)
+    return !exp || Date.now() >= exp * 1000
+  } catch {
+    return true
+  }
+}

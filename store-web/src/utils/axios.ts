@@ -1,4 +1,5 @@
 import { RefreshToken } from '@/services/auth'
+import { useUserStore } from '@/hooks/use-user-store'
 import axios from 'axios'
 
 // ----------------------------------------------------------------------------
@@ -37,6 +38,12 @@ function processQueue(newToken: string) {
   queue = []
 }
 
+function redirectToLogin() {
+  localStorage.removeItem('accessToken')
+  useUserStore.getState().clearUser()
+  window.location.href = '/auth/login'
+}
+
 axiosShoppingMallApi.interceptors.response.use(
   (response) => {
     return response
@@ -61,7 +68,7 @@ axiosShoppingMallApi.interceptors.response.use(
       try {
         const response = await RefreshToken()
         if (!response?.data) {
-          window.location.href = '/auth/login'
+          redirectToLogin()
           return
         }
         const { accessToken } = response.data
@@ -80,7 +87,7 @@ axiosShoppingMallApi.interceptors.response.use(
 
         return axiosShoppingMallApi(originalRequest)
       } catch (error) {
-        window.location.href = '/auth/login'
+        redirectToLogin()
         return Promise.reject(error)
       }
     }

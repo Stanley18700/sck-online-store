@@ -2,18 +2,24 @@
 
 import config from '@/config'
 import { useUserStore } from '@/hooks/use-user-store'
-import { decodeJWT } from '@/utils/jwt'
+import { decodeJWT, isTokenExpired } from '@/utils/jwt'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
-  const { user, setUser } = useUserStore()
+  const { user, setUser, clearUser } = useUserStore()
   const accessToken = localStorage.getItem('accessToken')
   const route = useRouter()
 
   useEffect(() => {
     if (!accessToken) return
+
+    if (isTokenExpired(accessToken)) {
+      localStorage.removeItem('accessToken')
+      clearUser()
+      return
+    }
 
     if (!user) {
       const payload = decodeJWT(accessToken)
@@ -26,7 +32,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
     }
 
     return route.push('/product/list')
-  }, [user, accessToken, route, setUser])
+  }, [user, accessToken, route, setUser, clearUser])
 
   return (
     <div className="flex h-screen">
