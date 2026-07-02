@@ -4,7 +4,6 @@ import RemoveItem from '@/app/cart/components/remove-item'
 import Image from '@/components/image'
 import InputQuantity from '@/components/input-quantity'
 import Text from '@/components/typography/text'
-import config from '@/config'
 import useOrderStore from '@/hooks/use-order-store'
 import { ProductDetailInCart } from '@/services/cart/get-product-list'
 import updateProductInCartService from '@/services/cart/update-product'
@@ -110,7 +109,7 @@ const ProductItem = ({
       <div className="h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
         <Image
           id={`product-${product_id}-image`}
-          src={`${config.imageUrl}/${product_image}`}
+          src={product_image}
           alt={product_name}
           width={94}
           height={94}

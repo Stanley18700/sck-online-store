@@ -1,7 +1,6 @@
 'use client'
 
 import Image from '@/components/image'
-import config from '@/config'
 import { ProductDetailType } from '@/services/product-detail'
 
 // ----------------------------------------------------------------------
@@ -12,7 +11,7 @@ const ProductImage = (product: ProductDetailType) => {
       <div className="aspect-h-2 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
         <Image
           id='product-detail-image'
-          src={`${config.imageUrl}/${product.product_image}`}
+          src={product.product_image}
           alt={product.product_name}
           width={767}
           height={575}

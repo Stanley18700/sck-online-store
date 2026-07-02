@@ -3,7 +3,6 @@
 import Image from '@/components/image'
 import Header4 from '@/components/typography/header4'
 import Text from '@/components/typography/text'
-import config from '@/config'
 import { ProductDetailType } from '@/services/product-lists'
 import { convertCurrency } from '@/utils/format'
 
@@ -19,7 +18,7 @@ const ProductCard = ({ data }: ProductCardProps) => {
       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
         <Image
           id={`product-card-image-${data.id}`}
-          src={`${config.imageUrl}${data.product_image}`}
+          src={data.product_image}
           alt={data.product_name}
           width={280}
           height={320}

@@ -1,5 +1,4 @@
 const config = {
-  imageUrl: 'http://localhost:3000',
   imageDefault: '/image-default.png',
   logo: {
     shoppingMall: '/logo.png',
