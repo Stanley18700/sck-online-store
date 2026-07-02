@@ -4,6 +4,7 @@
 package payment_test
 
 import (
+	"context"
 	"store-service/internal/payment"
 	"testing"
 
@@ -26,7 +27,7 @@ func Test_Payment_Input_PaymentDetail_CardNumber_4719700591590995_Should_Be_Tran
 	gateway := payment.BankGateway{
 		BankEndpoint: "http://localhost:8882",
 	}
-	actual, err := gateway.Payment(paymentDetail)
+	actual, err := gateway.Payment(context.Background(), paymentDetail)
 
 	assert.NotEmpty(t, actual)
 	assert.Equal(t, nil, err)
@@ -47,7 +48,7 @@ func Test_GetCardDetail_Input_PaymentDetail_CardNumber_4719700591590995_Should_B
 	gateway := payment.BankGateway{
 		BankEndpoint: "http://localhost:8882",
 	}
-	actual, err := gateway.GetCardDetail(orgID, uid)
+	actual, err := gateway.GetCardDetail(context.Background(), orgID, uid)
 
 	assert.Equal(t, expected, actual)
 	assert.Equal(t, nil, err)

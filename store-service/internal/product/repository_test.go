@@ -4,6 +4,7 @@
 package product_test
 
 import (
+	"context"
 	"store-service/internal/product"
 	"testing"
 
@@ -32,7 +33,7 @@ func Test_ProductRepository(t *testing.T) {
 		}
 		ID := 2
 
-		actualProduct, err := repository.GetProductByID(ID)
+		actualProduct, err := repository.GetProductByID(context.Background(), ID)
 		assert.Equal(t, expected, actualProduct)
 		assert.Equal(t, err, nil)
 	})
@@ -40,7 +41,7 @@ func Test_ProductRepository(t *testing.T) {
 	t.Run("UpdateStock_Input_Product_ID_2_No_Error", func(t *testing.T) {
 		productID := 2
 		stock := 1
-		err := repository.UpdateStock(productID, stock)
+		err := repository.UpdateStock(context.Background(), productID, stock)
 
 		assert.Equal(t, nil, err)
 	})

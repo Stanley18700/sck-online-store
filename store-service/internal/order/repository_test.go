@@ -4,6 +4,7 @@
 package order_test
 
 import (
+	"context"
 	"fmt"
 	"store-service/internal/order"
 	"testing"
@@ -36,7 +37,7 @@ func Test_OrderRepository(t *testing.T) {
 			EarnPoint:        4,
 		}
 
-		actualId, err := repository.CreateOrder(uid, orderDetail)
+		actualId, err := repository.CreateOrder(context.Background(), uid, orderDetail)
 
 		assert.Equal(t, nil, err)
 		assert.NotEmpty(t, actualId)
@@ -69,7 +70,7 @@ func Test_OrderRepository(t *testing.T) {
 		pid := 2
 		qty := 1
 		productPrice := 12.95
-		err := repository.CreateOrderProduct(oid, pid, qty, productPrice)
+		err := repository.CreateOrderProduct(context.Background(), oid, pid, qty, productPrice)
 
 		assert.Equal(t, nil, err)
 	})
@@ -78,7 +79,7 @@ func Test_OrderRepository(t *testing.T) {
 		txn := "TXN202002021525"
 		oid := 1
 
-		err := repository.UpdateOrderTransaction(oid, txn)
+		err := repository.UpdateOrderTransaction(context.Background(), oid, txn)
 
 		assert.Equal(t, nil, err)
 	})
@@ -88,7 +89,7 @@ func Test_OrderRepository(t *testing.T) {
 		transactionID := "TXN202002021525"
 		orderID := 11111111119
 
-		err := repository.UpdateOrderTransaction(orderID, transactionID)
+		err := repository.UpdateOrderTransaction(context.Background(), orderID, transactionID)
 
 		assert.Equal(t, expectedError, err)
 	})
@@ -103,7 +104,7 @@ func Test_OrderRepository(t *testing.T) {
 
 		oid := 1
 
-		actual, err := repository.GetOrderProduct(oid)
+		actual, err := repository.GetOrderProduct(context.Background(), oid)
 
 		assert.Equal(t, expected, actual)
 		assert.Equal(t, nil, err)
@@ -124,7 +125,7 @@ func Test_OrderRepository(t *testing.T) {
 			RecipientPhoneNumber: "0970809292",
 		}
 
-		actualId, err := repository.CreateShipping(uid, oid, shippingInfo)
+		actualId, err := repository.CreateShipping(context.Background(), uid, oid, shippingInfo)
 
 		assert.Equal(t, nil, err)
 		assert.NotEmpty(t, actualId)

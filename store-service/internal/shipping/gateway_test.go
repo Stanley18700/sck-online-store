@@ -4,6 +4,7 @@
 package shipping_test
 
 import (
+	"context"
 	"store-service/internal/shipping"
 	"testing"
 
@@ -15,7 +16,7 @@ func Test_GetTrackingNumber_Input_ShippingMethodID_Should_Be_Tracking_Number_No_
 	service := shipping.ShippingGateway{
 		ShippingEndpoint: "http://localhost:8883",
 	}
-	actualTrackingNumber, err := service.GetTrackingNumber(shipping.ShippingGatewaySubmit{
+	actualTrackingNumber, err := service.GetTrackingNumber(context.Background(), shipping.ShippingGatewaySubmit{
 		ShippingMethodID: 1,
 	})
 

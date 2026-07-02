@@ -4,6 +4,7 @@
 package shipping_test
 
 import (
+	"context"
 	"store-service/internal/shipping"
 	"testing"
 
@@ -30,7 +31,7 @@ func Test_ShippingRepository(t *testing.T) {
 		}
 		ID := 1
 
-		actualProduct, err := repository.GetShippingMethodByID(ID)
+		actualProduct, err := repository.GetShippingMethodByID(context.Background(), ID)
 		assert.Equal(t, expected, actualProduct)
 		assert.Equal(t, err, nil)
 	})
