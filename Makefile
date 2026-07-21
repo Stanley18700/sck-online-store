@@ -92,7 +92,7 @@ build_nginx:
 
 start_test_suite:
 	cp -f store-web/.env_local store-web/.env
-	docker compose up -d thirdparty point-service db store-service store-web nginx seed liquibase --build
+	docker compose up -d thirdparty point-service db store-service store-web nginx liquibase --build
 
 start_test_suite_grid:
 	cp -f store-web/.env_grid store-web/.env
