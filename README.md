@@ -3,6 +3,16 @@
 ### ใช้สำหรับ Workshop ประกอบการสอน
 # โจทย์เว็บไซต์ e-commerce
 
+## เพิ่งเข้าร่วมโปรเจกต์?
+
+เริ่มที่คู่มือติดตั้งเครื่อง ซึ่งครอบคลุมทั้ง Windows, macOS และ Linux ตั้งแต่ติดตั้งเครื่องมือ
+ไปจนถึงรันทั้ง stack และรันเทสต์ได้:
+
+- [`doc/instruction.th.md`](doc/instruction.th.md) — ฉบับภาษาไทย
+- [`doc/instruction.md`](doc/instruction.md) — English version
+
+ผู้ใช้ Windows ที่ไม่คุ้นกับ WSL และ `make` ดูภาคผนวก A ในคู่มือ ซึ่งใช้ Command Prompt ล้วน
+
 # Convention Web UI
 ## Common Convention
 - โค้ดการทำงานหนึ่งบรรทัด ไม่มีการใส่ Semi-colon `;`
