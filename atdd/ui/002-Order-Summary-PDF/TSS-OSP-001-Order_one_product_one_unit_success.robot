@@ -18,7 +18,7 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
 *** Test Cases ***
 ทดสอบ สั่งซื้อสินค้า Balance Training Bicycle จัดส่งด้วย Kerry ชำระเงินด้วยบัตรเครดิต Visa สำเร็จ และตรวจสอบใบเสร็จ
     เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่    /auth/login    login-page
-    เข้าสู่ระบบ    login-username-input    user_1    login-password-input    P@ssw0rd
+    เข้าสู่ระบบ    login-username-input    user_2    login-password-input    P@ssw0rd
     เลือกดูสินค้า    product-card-name-1    Balance Training Bicycle
     ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    43
     เพิ่มสินค้าลงตะกร้า
@@ -35,7 +35,7 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
     ยืนยัน OTP
     ตรวจสอบหมายเลขพัสดุว่าต้องขึ้นต้นด้วย    KR
     กดดาวน์โหลดไฟล์
-    ตรวขสอบข้อมูลในไฟล์ PDF    Sck    Shuhari    KR    credit
+    ตรวขสอบข้อมูลในไฟล์ PDF    Emily    Thompson    KR    credit
     ...    SportsFun    Balance Training Bicycle    4,314.60    1    4,314.60
     ...    4,314.60    kerry    4,364.60    43
 

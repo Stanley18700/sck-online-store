@@ -11,7 +11,7 @@ ${REMOTE_HUB_URL}
 *** Test Cases ***
 ทดสอบ เข้าสู่ระบบไม่สำเร็จ ด้วย username ที่ไม่ถูกต้อง
     เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่    /auth/login    login-page
-    เข้าสู่ระบบไม่สำเร็จ    login-username-input    user_100    login-password-input    P@ssw0rd
+    เข้าสู่ระบบไม่สำเร็จ    login-username-input    user    login-password-input    P@ssw0rd
 
 *** Keywords ***
 เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่

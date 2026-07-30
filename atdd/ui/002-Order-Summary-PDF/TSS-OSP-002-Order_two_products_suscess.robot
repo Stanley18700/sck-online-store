@@ -17,7 +17,7 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
 *** Test Cases ***
 ทดสอบ สั่งซื้อสินค้า Balance Training Bicycle จัดส่งด้วย Kerry ชำระเงินด้วยบัตรเครดิต Visa สำเร็จ และตรวจสอบใบเสร็จ
     เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่    /auth/login    login-page
-    เข้าสู่ระบบ    login-username-input    user_1    login-password-input    P@ssw0rd
+    เข้าสู่ระบบ    login-username-input    user_3    login-password-input    P@ssw0rd
     เลือกดูสินค้า    product-card-name-1    Balance Training Bicycle
     ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    43
     เพิ่มสินค้าลงตะกร้าและมีสินค้าจำนวน    1
@@ -47,7 +47,7 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
     ${order-product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=43    price=4,314.60    qty=1    total=4,314.60
     ${order-product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=4    price=465.81      qty=2    total=931.62
     ${order-product-list}=    Create List    ${order-product1}    ${order-product2}
-    ตรวขสอบข้อมูลในไฟล์ PDF    Sck    Shuhari    KR    credit
+    ตรวขสอบข้อมูลในไฟล์ PDF    Michael    James    KR    credit
     ...    ${order-product-list}
     ...    5,246.22    thai_post    5,296.22    52
 
