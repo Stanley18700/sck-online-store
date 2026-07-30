@@ -9,14 +9,14 @@
 #      re-fetch swag or its deps)
 
 # ---------- Stage 1: install swag (only depends on Go version) ----------
-FROM golang:1.25-alpine3.22 AS tools
+FROM golang:1.26.5-alpine3.24 AS tools
 RUN apk add --no-cache git
 # Pin to a specific swag version for reproducible builds
 ARG SWAG_VERSION=v1.16.3
 RUN GOBIN=/usr/local/bin go install github.com/swaggo/swag/cmd/swag@${SWAG_VERSION}
 
 # ---------- Stage 2: build the binary ----------
-FROM golang:1.25-alpine3.22 AS builder
+FROM golang:1.26.5-alpine3.24 AS builder
 WORKDIR /module
 
 # Bring the pinned swag binary in from the tools stage.
@@ -42,7 +42,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o app ./cmd/main.go
 
 # ---------- Stage 3: minimal runtime ----------
-FROM alpine:3.20.3
+FROM alpine:3.24
 RUN apk --no-cache add ca-certificates tzdata && \
     cp /usr/share/zoneinfo/Asia/Bangkok /etc/localtime && \
     echo "Asia/Bangkok" > /etc/timezone

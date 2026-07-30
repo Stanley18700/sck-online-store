@@ -12,7 +12,7 @@
 ARG STORE_SERVICE_URL
 
 # ---------- Stage 1: install dependencies ----------
-FROM node:21-alpine AS deps
+FROM node:24.18.0-alpine3.24 AS deps
 WORKDIR /app
 # Only copy the npm lockfile; package-lock.json is the source of truth.
 # yarn.lock is intentionally not used here.
@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/root/.npm \
     npm ci --no-audit --no-fund --prefer-offline
 
 # ---------- Stage 2: build ----------
-FROM node:21-alpine AS builder
+FROM node:24.18.0-alpine3.24 AS builder
 WORKDIR /app
 ARG STORE_SERVICE_URL
 COPY --from=deps /app/node_modules ./node_modules
@@ -39,7 +39,7 @@ RUN --mount=type=cache,target=/root/.npm \
     npm run build
 
 # ---------- Stage 3: slim runtime ----------
-FROM node:21-alpine AS runner
+FROM node:24.18.0-alpine3.24 AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production

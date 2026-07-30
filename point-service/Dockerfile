@@ -1,4 +1,4 @@
-FROM node:20-alpine3.19 AS builder
+FROM node:24.18.0-alpine3.24 AS builder
 
 RUN apk add --no-cache python3 make g++
 
@@ -16,7 +16,7 @@ RUN npm run build \
 
 # ---
 
-FROM node:20-alpine3.19
+FROM node:24.18.0-alpine3.24
 
 ENV NODE_ENV production
 

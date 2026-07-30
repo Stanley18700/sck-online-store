@@ -85,8 +85,8 @@ For the browser-based tests, Chrome installed on Windows is not reachable from W
 ## 3. Install the toolchain
 
 > §3–§7 are for **macOS, Linux, and Windows Path A (WSL2)**. On Path B (plain Windows), use
-> [Appendix A](#appendix-a--plain-windows-command-prompt-only) instead — but §8 (version
-> mismatches) and §9 (troubleshooting) still apply to you.
+> [Appendix A](#appendix-a--plain-windows-command-prompt-only) instead — but §8 (container
+> versions) and §9 (troubleshooting) still apply to you.
 
 ### Go 1.26.5
 
@@ -280,25 +280,36 @@ Before pushing, `make test_all` runs the whole pipeline: lint → unit → ATDD.
 
 ---
 
-## 8. Version mismatches you will notice
+## 8. Versions in the containers vs. on your machine
 
-Your local toolchain is intentionally newer than what the containers use. This is fine — Go
-and Node are backward compatible in the directions that matter here — but it is worth knowing
-so the differences don't look like bugs:
+The containers now run the same versions §1 told you to install, so nothing here should look
+like a bug. Every image tag is pinned to an exact patch — the table is the contract:
 
-| Where                          | Version there              | You have  |
-| ------------------------------ | -------------------------- | --------- |
-| `store-service/go.mod`         | `go 1.25.0` language level | Go 1.26.5 |
-| `store-service/Dockerfile`     | `golang:1.25-alpine3.22`   | Go 1.26.5 |
-| `store-web/Dockerfile`         | `node:21-alpine`           | Node 24   |
-| `point-service/Dockerfile`     | `node:20-alpine3.19`       | Node 24   |
+| Where                          | Version there              | You have     |
+| ------------------------------ | -------------------------- | ------------ |
+| `store-service/go.mod`         | `go 1.26.5` language level | Go 1.26.5    |
+| `store-service/Dockerfile`     | `golang:1.26.5-alpine3.24` | Go 1.26.5    |
+| `store-service` runtime stage  | `alpine:3.24`              | —            |
+| `store-web/Dockerfile`         | `node:24.18.0-alpine3.24`  | Node 24.18.1 |
+| `point-service/Dockerfile`     | `node:24.18.0-alpine3.24`  | Node 24.18.1 |
 
-A newer Go toolchain compiles a `go 1.25` module without complaint. Don't bump the `go`
-directive in `go.mod` just because your local Go is newer — that would break the Docker build.
+The one gap is the Node patch: **there is no `node:24.18.1` image on Docker Hub** — the newest
+published patch on that line is `24.18.0` — so the containers sit one patch behind your local
+`24.18.1`. That difference is invisible in practice. Don't "fix" it by floating the tag to
+`node:24-alpine3.24`; a pinned patch is what keeps builds reproducible. When Docker Hub
+publishes `24.18.1`, bump both Dockerfiles.
 
-`store-web` is on Next.js 14.0.4, which predates Node 24. It builds and runs in practice, but
-if you hit an odd `next dev` or `next build` failure that nobody else sees, drop to the
-container's version to confirm before chasing it: `nvm install 21 && nvm use 21`.
+Go matches exactly, which means the two sides have to move together. Don't bump the `go`
+directive in `go.mod` on its own when you install a newer Go — the Dockerfile pins the same
+version, and a module that requires a newer toolchain than the builder image has will fail the
+Docker build. Same the other way round: bumping the image without the `go` directive leaves the
+docs and the build disagreeing about what the project targets.
+
+The application frameworks are older than the runtimes underneath them — `store-web` is on
+Next.js 14.0.4 and `point-service` on NestJS 9, both of which predate Node 24. They build and
+run in practice, but if you hit an odd `next dev` / `next build` or Nest startup failure that
+nobody else sees, drop to an older Node to confirm it's a runtime issue before chasing it:
+`nvm install 20 && nvm use 20`.
 
 ---
 
