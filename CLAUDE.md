@@ -23,8 +23,12 @@ make down               # Docker Compose down
 
 ### Run Backend (Go) in Dev Mode
 ```bash
+make store_db                 # DB must be up first
 make store_service_dev_mode   # Runs store-service locally with env vars
 ```
+store-service is configured entirely by env vars — `DB_CONNECTION`, `POINT_GATEWAY`,
+`BANK_GATEWAY`, `SHIPPING_GATEWAY`, `JWT_SECRET` (see the `store_service_dev_mode` target
+for local values). Missing vars surface as connection failures at request time, not startup.
 
 ### Unit Tests
 ```bash
@@ -40,13 +44,23 @@ make code-coverage
 # NestJS point-service tests
 cd point-service && npm test
 
-# Next.js component tests (Cypress)
+# Next.js component tests (Cypress — store-web has no Jest)
 cd store-web && npm run test:component
+cd store-web && npx cypress run --component --spec "src/components/cart.cy.tsx"  # single spec
+
+# Go test cache gets stale after fixture changes
+make backend_clear_test_cache
 ```
 
 ### Integration Tests
+Integration tests live alongside unit tests in the same packages, gated by the
+`//go:build integration` tag (`internal/*/repository_test.go`, `internal/*/gateway_test.go`).
+Plain `go test ./...` skips them; they need MySQL + Liquibase + thirdparty running.
+
 ```bash
-make backend_integration_test   # Starts DB+thirdparty, runs integration tests, then docker down
+make backend_integration_test   # setup_test_fixtures → go test -tags=integration ./... → docker down
+make setup_test_fixtures        # DB + thirdparty + liquibase only (keeps them up)
+cd store-service && go test -tags=integration -v ./internal/cart/...   # single package
 ```
 
 ### Full ATDD Test Suite
@@ -61,7 +75,17 @@ make run_newman_authentication
 make run_newman_order_summary_pdf
 make run_robot_authentication
 make run_robot_order_summary_pdf
+
+# Point Robot at a non-default host
+make run_robot URL=http://staging.example/product/list
 ```
+
+`start_test_suite` copies `store-web/.env_local` over `store-web/.env`; the Selenium Grid
+variant (`start_test_suite_grid`) copies `.env_grid` instead and also brings up
+`selenium-hub` + `chrome`, with `REMOTE_HUB_URL` selecting the remote driver. Switching
+between the two without re-running the matching `start_test_suite_*` target leaves a stale
+`.env` and the UI tests hit the wrong host. The Robot targets build their own
+`atdd/ui/.venv` from `requirements.txt` on every run.
 
 ### Code Analysis
 ```bash
@@ -72,7 +96,7 @@ make code_analysis_backend     # go vet ./... (store-service)
 ### Development Workflow (run before commit)
 ```bash
 make test_all              # Full pipeline: analysis → unit → ATDD (API + UI)
-make unit_test_all         # All unit tests: Go + Jest + Cypress component
+make unit_test_all         # Go + point-service Jest + store-web Cypress component
 make code_analysis_all     # All linting: go vet + npm run lint
 ```
 
@@ -125,6 +149,10 @@ make eks_deploy_full           # Both: app + monitoring
 
 ## Architecture
 
+Directory-scoped `CLAUDE.md` files add detail for their own area — read them before working
+there: `atdd/CLAUDE.md` (test suite layout, Robot/Newman conventions), `thirdparty/CLAUDE.md`
+(mock gateway behavior). `deploy/README.md` and `monitoring/docs/` cover infra.
+
 ### Application Services
 ```
                     ┌──────────┐
@@ -172,6 +200,10 @@ No processing duplication — the app cluster gateway is a lightweight forwarder
 - `internal/shipping/` — Shipping (calls thirdparty shipping gateway)
 - `internal/point/` — Points integration (calls point-service)
 - `internal/middleware/` — HTTP middleware
+- `internal/otel/`, `internal/metrics/`, `internal/profiling/` — tracing, Prometheus metrics,
+  Pyroscope wiring (the concrete side of the observability diagram above)
+- Each domain package follows the same shape: `<name>.go` (service, depends on interfaces),
+  `repository.go` (SQLx), `model.go`; handlers are registered in `cmd/api/`
 - Key deps: Gin, SQLx, gin-swagger, Elastic APM
 
 ### store-web (Next.js) structure
@@ -203,7 +235,8 @@ No processing duplication — the app cluster gateway is a lightweight forwarder
 
 ### store-service (Go)
 - Functions: PascalCase (`CalculateTotalPrice()`)
-- Files: PascalCase (`OrderService.go`, `OrderService_test.go`)
+- Files: lowercase, one concern per file — `order.go` (service), `repository.go`, `model.go`,
+  `<name>_test.go`, `mock_<name>_test.go` (hand-written mocks in the `_test` package)
 - Packages/directories: lowercase
 - Test functions: Snake_Case (`Test_CalculateAge_Input_Birth_Date_18042003_Should_be_16`)
 - Variables: camelCase, constants UPPERCASE
