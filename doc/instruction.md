@@ -1,5 +1,7 @@
 # Onboarding — Machine Setup
 
+> ฉบับภาษาไทย: [`instruction.th.md`](instruction.th.md)
+
 Everything you need to install to build, run, and test **sck-online-store** on Windows, macOS,
 or Linux. Follow the sections in order; the whole thing takes about 30–45 minutes, most of it
 downloads.
