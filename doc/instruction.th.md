@@ -464,7 +464,7 @@ docker compose down
 
 | แทนที่จะรัน | ให้พิมพ์ใน cmd |
 | --- | --- |
-| `make start_all` | `docker compose up -d db adminer seed liquibase thirdparty point-service store-service store-web nginx --build` |
+| `make start_all` | `docker compose up -d db adminer liquibase thirdparty point-service store-service store-web nginx --build` |
 | `make down` | `docker compose down` |
 | `make store_db` | `docker compose up -d db` |
 | `make install_dependency_frontend` | `cd store-web && npm install && cd ..` |
