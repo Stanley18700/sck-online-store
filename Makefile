@@ -73,7 +73,7 @@ thirdparty:
 	docker compose up -d thirdparty --build
 
 start_all:
-	 docker compose up -d db adminer seed liquibase thirdparty point-service store-service store-web nginx --build
+	 docker compose up -d db adminer  liquibase thirdparty point-service store-service store-web nginx --build
 
 down:
 	docker compose down
@@ -96,7 +96,7 @@ start_test_suite:
 
 start_test_suite_grid:
 	cp -f store-web/.env_grid store-web/.env
-	docker compose up -d thirdparty point-service db store-service store-web nginx seed liquibase --build
+	docker compose up -d thirdparty point-service db store-service store-web nginx  liquibase --build
 	docker compose up selenium-hub chrome -d
 
 start_test_suite_sck:
