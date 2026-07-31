@@ -217,10 +217,10 @@ make install_dependency_backend       # store-service:  go mod tidy
 cd point-service && npm install && cd ..   # no make target for this one; needed by make unit_test_all
 
 # Build and start everything
-make start_all
+make start_test_suite
 ```
 
-First `make start_all` pulls images and compiles both services — expect 5–15 minutes. Later
+First `make start_test_suite` pulls images and compiles both services — expect 5–15 minutes. Later
 runs are much faster. When it settles:
 
 | URL                             | What                                        |
@@ -341,7 +341,7 @@ destroys local data, which is fine — everything is seeded:
 ```bash
 make down
 docker compose down -v
-make start_all
+make start_test_suite
 ```
 
 **Go tests pass locally but fail in CI, or vice versa.** The test cache is probably stale
@@ -452,10 +452,11 @@ cd point-service && npm install && cd ..
 cd store-service && go mod tidy && cd ..
 
 :: Build and start everything
-docker compose up -d db adminer seed liquibase thirdparty point-service store-service store-web nginx --build
+cp -f store-web/.env_local store-web/.env
+docker compose up -d thirdparty point-service db store-service store-web nginx liquibase --build
 ```
 
-That last line is exactly what `make start_all` runs. Open http://localhost when it finishes —
+That last line is exactly what `make start_test_suite` runs. Open http://localhost when it finishes —
 see the URL table in §6 for the rest.
 
 To stop everything:
@@ -471,7 +472,7 @@ here. Run these from the repo root unless noted.
 
 | Instead of | Run this in cmd |
 | --- | --- |
-| `make start_all` | `docker compose up -d db adminer seed liquibase thirdparty point-service store-service store-web nginx --build` |
+| `make start_test_suite` | `docker compose up -d db adminer seed liquibase thirdparty point-service store-service store-web nginx --build` |
 | `make down` | `docker compose down` |
 | `make store_db` | `docker compose up -d db` |
 | `make install_dependency_frontend` | `cd store-web && npm install && cd ..` |
