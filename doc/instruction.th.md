@@ -209,10 +209,10 @@ make install_dependency_backend       # store-service:  go mod tidy
 cd point-service && npm install && cd ..   # ตัวนี้ไม่มี make target แต่ make unit_test_all ต้องใช้
 
 # build แล้วสตาร์ตทุกอย่าง
-make start_test_suite
+make start_all
 ```
 
-`make start_test_suite` ครั้งแรกจะ pull image และ compile ทั้งสอง service ใช้เวลาประมาณ 5–15 นาที
+`make start_all` ครั้งแรกจะ pull image และ compile ทั้งสอง service ใช้เวลาประมาณ 5–15 นาที
 ครั้งถัด ๆ ไปจะเร็วขึ้นมาก เมื่อทุกอย่างพร้อมแล้ว:
 
 | URL                             | คืออะไร                                       |
@@ -332,7 +332,7 @@ docker compose ps            # ดูว่าตัวไหน unhealthy
 ```bash
 make down
 docker compose down -v
-make start_test_suite
+make start_all
 ```
 
 **เทสต์ Go ผ่านบนเครื่องแต่ fail ใน CI หรือกลับกัน** มักเกิดจาก test cache ค้างหลังแก้ fixture:
@@ -448,7 +448,7 @@ cp -f store-web/.env_local store-web/.env
 docker compose up -d thirdparty point-service db store-service store-web nginx liquibase --build
 ```
 
-บรรทัดสุดท้ายคือสิ่งที่ `make start_test_suite` รันจริง ๆ เมื่อเสร็จแล้วให้เปิด http://localhost
+บรรทัดสุดท้ายคือสิ่งที่ `make start_all` รันจริง ๆ เมื่อเสร็จแล้วให้เปิด http://localhost
 ส่วน URL อื่น ๆ ดูได้จากตารางใน §6
 
 ปิดทุกอย่างด้วย:
@@ -464,7 +464,7 @@ docker compose down
 
 | แทนที่จะรัน | ให้พิมพ์ใน cmd |
 | --- | --- |
-| `make start_test_suite` | `docker compose up -d db adminer seed liquibase thirdparty point-service store-service store-web nginx --build` |
+| `make start_all` | `docker compose up -d db adminer seed liquibase thirdparty point-service store-service store-web nginx --build` |
 | `make down` | `docker compose down` |
 | `make store_db` | `docker compose up -d db` |
 | `make install_dependency_frontend` | `cd store-web && npm install && cd ..` |

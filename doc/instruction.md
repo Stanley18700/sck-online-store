@@ -217,10 +217,10 @@ make install_dependency_backend       # store-service:  go mod tidy
 cd point-service && npm install && cd ..   # no make target for this one; needed by make unit_test_all
 
 # Build and start everything
-make start_test_suite
+make start_all
 ```
 
-First `make start_test_suite` pulls images and compiles both services — expect 5–15 minutes. Later
+First `make start_all` pulls images and compiles both services — expect 5–15 minutes. Later
 runs are much faster. When it settles:
 
 | URL                             | What                                        |
@@ -472,7 +472,7 @@ here. Run these from the repo root unless noted.
 
 | Instead of | Run this in cmd |
 | --- | --- |
-| `make start_test_suite` | `docker compose up -d db adminer seed liquibase thirdparty point-service store-service store-web nginx --build` |
+| `make start_all` | `docker compose up -d db adminer seed liquibase thirdparty point-service store-service store-web nginx --build` |
 | `make down` | `docker compose down` |
 | `make store_db` | `docker compose up -d db` |
 | `make install_dependency_frontend` | `cd store-web && npm install && cd ..` |
