@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log/slog"
 	"store-service/internal/common"
+	"store-service/internal/point"
 )
 
 type CartInterface interface {
@@ -15,6 +16,7 @@ type CartInterface interface {
 
 type CartService struct {
 	CartRepository CartRepository
+	PointService   point.PointInterface
 }
 
 func (cartService CartService) GetCart(ctx context.Context, uid int) (CartResult, error) {
@@ -48,13 +50,24 @@ func (cartService CartService) GetCart(ctx context.Context, uid int) (CartResult
 			Summary: CartSummary{},
 		}, err
 	}
+
+	receivePoint, err := cartService.PointService.CalculatePoint(ctx, totalPriceTHB)
+	if err != nil {
+		slog.ErrorContext(ctx, "PointService.CalculatePoint failed",
+			"log_type", "error", "error_code", "POINT_CALCULATE_FAILED", "error_message", err.Error(), "user_id", uid)
+		return CartResult{
+			Carts:   []CartDetail{},
+			Summary: CartSummary{},
+		}, err
+	}
+
 	return CartResult{
 		Carts: carts,
 		Summary: CartSummary{
 			TotalPrice:        totalPrice,
 			TotalPriceTHB:     totalPriceTHB,
 			TotalPriceFullTHB: totalPriceFullTHB,
-			ReceivePoint:      common.CalculatePoint(totalPriceTHB),
+			ReceivePoint:      receivePoint.Point,
 		},
 	}, err
 }

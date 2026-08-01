@@ -95,6 +95,40 @@ func Test_TotalPoint_Point_100_and_50_Should_be_Point_150(t *testing.T) {
 	assert.Equal(t, nil, err)
 }
 
+func Test_CalculatePoint_Input_Amount_100_Should_be_Point_2(t *testing.T) {
+	expected := point.TotalPoint{
+		Point: 2,
+	}
+	amount := 100.0
+
+	mockPointGateway := new(mockPointGateway)
+	mockPointGateway.On("CalculatePoint", mock.Anything, amount).Return(2, nil)
+
+	pointService := point.PointService{
+		PointGateway: mockPointGateway,
+	}
+	actual, err := pointService.CalculatePoint(context.Background(), amount)
+
+	assert.Equal(t, expected, actual)
+	assert.Equal(t, nil, err)
+}
+
+func Test_CalculatePoint_Gateway_Error_Should_be_Error(t *testing.T) {
+	expected := fmt.Errorf("response is not ok but it's 500")
+	amount := 100.0
+
+	mockPointGateway := new(mockPointGateway)
+	mockPointGateway.On("CalculatePoint", mock.Anything, amount).Return(0, expected)
+
+	pointService := point.PointService{
+		PointGateway: mockPointGateway,
+	}
+	actual, err := pointService.CalculatePoint(context.Background(), amount)
+
+	assert.Equal(t, point.TotalPoint{}, actual)
+	assert.Equal(t, expected, err)
+}
+
 func Test_TotalPoint_Point_100_and_Minus_50_Should_be_Point_50(t *testing.T) {
 	expected := point.TotalPoint{
 		Point: 50,

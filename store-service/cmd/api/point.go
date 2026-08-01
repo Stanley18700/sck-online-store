@@ -74,6 +74,47 @@ func (api PointAPI) DeductPointHandler(context *gin.Context) {
 	context.JSON(http.StatusOK, res)
 }
 
+// @Summary Calculate receive points from an amount
+// @Description Calculate how many points a payment amount earns (delegated to point-service)
+// @Tags point
+// @Accept json
+// @Produce json
+// @Param amount query number true "Payment amount in THB"
+// @Success 200 {object} point.TotalPoint
+// @Failure 400 {string} string "Bad request error"
+// @Failure 500
+// @Router /api/v1/point/calculate [get]
+func (api PointAPI) CalculatePointHandler(context *gin.Context) {
+	ctx := context.Request.Context()
+
+	amount, err := strconv.ParseFloat(context.Query("amount"), 64)
+	if err != nil {
+		slog.ErrorContext(ctx, "Point calculate bad request",
+			"log_type", "error",
+			"error_code", "INVALID_REQUEST",
+			"error_message", err.Error(),
+		)
+		context.String(http.StatusBadRequest, "amount must be a number")
+		return
+	}
+
+	res, err := api.PointService.CalculatePoint(ctx, amount)
+	if err != nil {
+		slog.ErrorContext(ctx, "PointService.CalculatePoint failed",
+			"log_type", "error",
+			"error_code", "POINT_CALCULATE_FAILED",
+			"error_message", err.Error(),
+			slog.Any("request", map[string]any{"amount": amount}),
+		)
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	context.JSON(http.StatusOK, res)
+}
+
 // @Summary Get total points
 // @Description Get user's total point balance
 // @Tags point

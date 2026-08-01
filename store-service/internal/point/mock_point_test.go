@@ -20,3 +20,8 @@ func (gateway *mockPointGateway) CreatePoint(ctx context.Context, userID int, po
 	argument := gateway.Called(ctx, userID, pointItem)
 	return argument.Get(0).(point.Point), argument.Error(1)
 }
+
+func (gateway *mockPointGateway) CalculatePoint(ctx context.Context, amount float64) (int, error) {
+	argument := gateway.Called(ctx, amount)
+	return argument.Int(0), argument.Error(1)
+}
