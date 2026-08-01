@@ -75,7 +75,7 @@ func (api PointAPI) DeductPointHandler(context *gin.Context) {
 }
 
 // @Summary Calculate receive points from an amount
-// @Description Calculate how many points a payment amount earns (delegated to point-service)
+// @Description Calculate how many points a payment amount earns
 // @Tags point
 // @Accept json
 // @Produce json

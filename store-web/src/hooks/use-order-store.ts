@@ -235,7 +235,7 @@ const useOrderStore = create<OrderStoreType>()(
         shippingFee
       )
 
-      // Point Receive (from backend cart summary via point-service)
+      // Point Receive
       const receivePoint = get().summary.receive_point
 
       set(
