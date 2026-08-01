@@ -16,9 +16,9 @@ ${REMOTE_HUB_URL}
     ค้นหาสินค้าด้วย คำค้นหา    Bicycle
     ตรวจสอบผลการค้นหา    product-card-name-1    Balance Training Bicycle
     เลือกดูสินค้า    product-card-name-1    Balance Training Bicycle
-    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    43
+    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    86
     เพิ่มสินค้าลงตะกร้า
-    ตรวจสอบข้อมูลสินค้าในตะกร้า และ Checkout    Balance Training Bicycle    SportsFun    4,314.60    43    4,314.60
+    ตรวจสอบข้อมูลสินค้าในตะกร้า และ Checkout    Balance Training Bicycle    SportsFun    4,314.60    86    4,314.60
     ใส่ที่อยู่จัดส่งสินค้า    
     ...    ณัฐพล    ศรีสมบัติ    
     ...    43/8 หมู่บ้านเปี่ยมสุข ถนนลาดพร้าว ซอย 63    กรุงเทพมหานคร
