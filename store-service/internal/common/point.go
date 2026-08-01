@@ -7,6 +7,6 @@ func CalculatePoint(amount float64) int {
 		return 0
 	}
 
-	points := int(math.Floor(amount / 100))
+	points := int(math.Floor(amount / 50))
 	return points
 }
