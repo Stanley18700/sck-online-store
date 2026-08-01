@@ -1,4 +1,4 @@
-
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreatePointDto } from '../point.dto';
 import { PointController } from '../point.controller';
@@ -10,6 +10,7 @@ describe('PointController', () => {
   const mockPointService = {
     getPoint: jest.fn(),
     deductPoint: jest.fn(),
+    calculatePoint: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -47,8 +48,9 @@ describe('PointController', () => {
       updated: '2024-08-25T09:06:58',
     } as CreatePointDto;
 
-
-    jest.spyOn(mockPointService, 'deductPoint').mockReturnValue(createPointResponse);
+    jest
+      .spyOn(mockPointService, 'deductPoint')
+      .mockReturnValue(createPointResponse);
 
     // act
     const result = await controller.createPoint(createPointInput);
@@ -57,6 +59,54 @@ describe('PointController', () => {
     expect(mockPointService.deductPoint).toBeCalled();
     expect(mockPointService.deductPoint).toBeCalledWith(createPointInput);
     expect(result).toEqual(createPointResponse);
+  });
+
+  it('Calculate => should return point calculated by the service from a given amount', () => {
+    // arrange
+    const amount = '1000';
+    const expected = { point: 10 };
+
+    jest.spyOn(mockPointService, 'calculatePoint').mockReturnValue(10);
+
+    // act
+    const result = controller.calculatePoint(amount);
+
+    // assert
+    expect(mockPointService.calculatePoint).toBeCalled();
+    expect(mockPointService.calculatePoint).toBeCalledWith(1000);
+    expect(result).toEqual(expected);
+  });
+
+  it('Calculate => should throw BAD_REQUEST when amount is missing', () => {
+    // arrange
+    const amount = undefined;
+
+    // act
+    const act = () => controller.calculatePoint(amount);
+
+    // assert
+    expect(act).toThrow(HttpException);
+    try {
+      act();
+    } catch (error) {
+      expect(error.getStatus()).toEqual(HttpStatus.BAD_REQUEST);
+    }
+  });
+
+  it('Calculate => should throw BAD_REQUEST when amount is not a number', () => {
+    // arrange
+    const amount = 'abc';
+
+    // act
+    const act = () => controller.calculatePoint(amount);
+
+    // assert
+    expect(act).toThrow(HttpException);
+    try {
+      act();
+    } catch (error) {
+      expect(error.getStatus()).toEqual(HttpStatus.BAD_REQUEST);
+    }
   });
 
   it('Find => should return an array of point', async () => {
@@ -79,5 +129,4 @@ describe('PointController', () => {
     expect(result).toEqual(points);
     expect(mockPointService.getPoint).toBeCalled();
   });
-
 });

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Point } from './point.entity';
 import { CreatePointDto } from './point.dto';
+import { POINT_RATE } from './point.constant';
 import { logs, SeverityNumber } from '@opentelemetry/api-logs';
 
 const otelLogger = logs.getLogger('point-service');
@@ -16,6 +17,24 @@ export class PointService {
     private pointRepository: Repository<Point>,
   ) {}
 
+  calculatePoint(amount: number): number {
+    const point = amount < 0 ? 0 : Math.floor(amount / POINT_RATE);
+    this.logger.log(`Point calculated: amount=${amount}, point=${point}`);
+    otelLogger.emit({
+      severityNumber: SeverityNumber.INFO,
+      severityText: 'INFO',
+      body: 'Point calculated',
+      attributes: {
+        log_type: 'business',
+        event: 'point_calculated',
+        entity_type: 'point',
+        amount: amount,
+        point: point,
+      },
+    });
+    return point;
+  }
+
   async getPoint(): Promise<Point[]> {
     try {
       const points = await this.pointRepository.find();
@@ -25,10 +44,10 @@ export class PointService {
         severityText: 'INFO',
         body: 'Points retrieved',
         attributes: {
-          'log_type': 'business',
-          'event': 'points_retrieved',
-          'entity_type': 'point',
-          'items_count': points.length,
+          log_type: 'business',
+          event: 'points_retrieved',
+          entity_type: 'point',
+          items_count: points.length,
         },
       });
       return points;
@@ -55,13 +74,13 @@ export class PointService {
         severityText: 'INFO',
         body: 'Points deducted',
         attributes: {
-          'log_type': 'state_change',
-          'event': 'points_deducted',
-          'entity_type': 'point',
-          'entity_id': saved.id,
-          'changed_by': point.userId,
-          'org_id': point.orgId,
-          'amount': point.amount,
+          log_type: 'state_change',
+          event: 'points_deducted',
+          entity_type: 'point',
+          entity_id: saved.id,
+          changed_by: point.userId,
+          org_id: point.orgId,
+          amount: point.amount,
         },
       });
       return saved;

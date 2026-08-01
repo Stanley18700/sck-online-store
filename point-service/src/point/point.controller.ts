@@ -1,4 +1,13 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Logger,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { PointService } from './point.service';
 import { CreatePointDto } from './point.dto';
 import { logs, SeverityNumber } from '@opentelemetry/api-logs';
@@ -11,6 +20,42 @@ export class PointController {
 
   constructor(private readonly pointService: PointService) {}
 
+  @Get('calculate')
+  calculatePoint(@Query('amount') amount: string) {
+    this.logger.log(`GET /point/calculate request received: amount=${amount}`);
+    otelLogger.emit({
+      severityNumber: SeverityNumber.INFO,
+      severityText: 'INFO',
+      body: 'Calculate point request received',
+      attributes: {
+        log_type: 'business',
+        event: 'calculate_point_request',
+        entity_type: 'point',
+        amount: amount,
+      },
+    });
+    const parsedAmount = Number(amount);
+    if (amount === undefined || amount === '' || isNaN(parsedAmount)) {
+      this.logger.error(`GET /point/calculate invalid amount: ${amount}`);
+      otelLogger.emit({
+        severityNumber: SeverityNumber.ERROR,
+        severityText: 'ERROR',
+        body: 'Calculate point invalid amount',
+        attributes: {
+          log_type: 'business',
+          event: 'calculate_point_invalid_amount',
+          entity_type: 'point',
+          amount: amount,
+        },
+      });
+      throw new HttpException(
+        'amount must be a number',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return { point: this.pointService.calculatePoint(parsedAmount) };
+  }
+
   @Get()
   async getPoint() {
     this.logger.log('GET /point request received');
@@ -19,9 +64,9 @@ export class PointController {
       severityText: 'INFO',
       body: 'Get points request received',
       attributes: {
-        'log_type': 'business',
-        'event': 'get_points_request',
-        'entity_type': 'point',
+        log_type: 'business',
+        event: 'get_points_request',
+        entity_type: 'point',
       },
     });
     try {
@@ -48,12 +93,12 @@ export class PointController {
       severityText: 'INFO',
       body: 'Deduct points request received',
       attributes: {
-        'log_type': 'business',
-        'event': 'deduct_points_request',
-        'entity_type': 'point',
-        'actor_id': body.userId,
-        'org_id': body.orgId,
-        'amount': body.amount,
+        log_type: 'business',
+        event: 'deduct_points_request',
+        entity_type: 'point',
+        actor_id: body.userId,
+        org_id: body.orgId,
+        amount: body.amount,
       },
     });
     try {
