@@ -1,1 +1,1 @@
-export const POINT_RATE = 100;
+export const POINT_RATE = 50;
