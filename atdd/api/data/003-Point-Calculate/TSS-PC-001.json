@@ -3,25 +3,25 @@
     "username": "user_1",
     "password": "P@ssw0rd",
     "amount": 100,
-    "expected_point": 1
+    "expected_point": 2
   },
   {
     "username": "user_1",
     "password": "P@ssw0rd",
     "amount": 1000,
-    "expected_point": 10
+    "expected_point": 20
   },
   {
     "username": "user_1",
     "password": "P@ssw0rd",
     "amount": 1060,
-    "expected_point": 10
+    "expected_point": 21
   },
   {
     "username": "user_1",
     "password": "P@ssw0rd",
     "amount": 60,
-    "expected_point": 0
+    "expected_point": 1
   },
   {
     "username": "user_1",
@@ -33,25 +33,25 @@
     "username": "user_1",
     "password": "P@ssw0rd",
     "amount": 88,
-    "expected_point": 0
+    "expected_point": 1
   },
   {
     "username": "user_1",
     "password": "P@ssw0rd",
     "amount": 8888,
-    "expected_point": 88
+    "expected_point": 177
   },
   {
     "username": "user_1",
     "password": "P@ssw0rd",
     "amount": 10000,
-    "expected_point": 100
+    "expected_point": 200
   },
   {
     "username": "user_1",
     "password": "P@ssw0rd",
     "amount": 599.999,
-    "expected_point": 5
+    "expected_point": 11
   },
   {
     "username": "user_1",

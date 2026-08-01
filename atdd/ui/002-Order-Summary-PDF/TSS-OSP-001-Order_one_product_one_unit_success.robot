@@ -20,9 +20,9 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
     เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่    /auth/login    login-page
     เข้าสู่ระบบ    login-username-input    user_2    login-password-input    P@ssw0rd
     เลือกดูสินค้า    product-card-name-1    Balance Training Bicycle
-    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    43
+    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    86
     เพิ่มสินค้าลงตะกร้า
-    ตรวจสอบข้อมูลสินค้าในตะกร้า และ Checkout    Balance Training Bicycle    SportsFun    4,314.60    43    4,314.60
+    ตรวจสอบข้อมูลสินค้าในตะกร้า และ Checkout    Balance Training Bicycle    SportsFun    4,314.60    86    4,314.60
     ใส่ที่อยู่จัดส่งสินค้า    
     ...    ณัฐพล    ศรีสมบัติ    
     ...    43/8 หมู่บ้านเปี่ยมสุข ถนนลาดพร้าว ซอย 63    กรุงเทพมหานคร
@@ -37,7 +37,7 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
     กดดาวน์โหลดไฟล์
     ตรวขสอบข้อมูลในไฟล์ PDF    Emily    Thompson    KR    credit
     ...    SportsFun    Balance Training Bicycle    4,314.60    1    4,314.60
-    ...    4,314.60    kerry    4,364.60    43
+    ...    4,314.60    kerry    4,364.60    86
 
 *** Keywords ***
 Setup Folder For Download
