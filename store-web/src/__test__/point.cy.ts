@@ -19,9 +19,9 @@ describe('Utils > point > receiptPoint', () => {
     expect(point).to.equal(actual)
   })
 
-  it('ต้องการเห็น จำนวนแต้มที่ได้ 0 แต้ม จากราคาที่จ่าย 60 บาท', () => {
+  it('ต้องการเห็น จำนวนแต้มที่ได้ 1 แต้ม จากราคาที่จ่าย 60 บาท', () => {
     const payment = 60
-    const actual = 0
+    const actual = 1
 
     const point = receiptPoint(payment)
 
