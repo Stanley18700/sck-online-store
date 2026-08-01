@@ -1,27 +1,27 @@
 import { receiptPoint } from '@/utils/point'
 
 describe('Utils > point > receiptPoint', () => {
-  it('ต้องการเห็น จำนวนแต้มที่ได้ 10 แต้ม จากราคาที่จ่าย 1000 บาท', () => {
+  it('ต้องการเห็น จำนวนแต้มที่ได้ 20 แต้ม จากราคาที่จ่าย 1000 บาท', () => {
     const payment = 1000
-    const actual = 10
+    const actual = 20
 
     const point = receiptPoint(payment)
 
     expect(point).to.equal(actual)
   })
 
-  it('ต้องการเห็น จำนวนแต้มที่ได้ 10 แต้ม จากราคาที่จ่าย 1060 บาท', () => {
+  it('ต้องการเห็น จำนวนแต้มที่ได้ 21 แต้ม จากราคาที่จ่าย 1060 บาท', () => {
     const payment = 1060
-    const actual = 10
+    const actual = 21
 
     const point = receiptPoint(payment)
 
     expect(point).to.equal(actual)
   })
 
-  it('ต้องการเห็น จำนวนแต้มที่ได้ 0 แต้ม จากราคาที่จ่าย 60 บาท', () => {
+  it('ต้องการเห็น จำนวนแต้มที่ได้ 1 แต้ม จากราคาที่จ่าย 60 บาท', () => {
     const payment = 60
-    const actual = 0
+    const actual = 1
 
     const point = receiptPoint(payment)
 

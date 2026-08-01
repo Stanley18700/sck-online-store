@@ -5,7 +5,7 @@ const config = {
     sckPaymentGateway: '/logo-sck-payment-gateway.png',
     loginPage: '/sck-online-store-page-bg.png'
   },
-  pointRate: 100
+  pointRate: 50
 }
 
 export default config
