@@ -57,6 +57,7 @@ Setup Folder For Download
     Empty Directory     ${DOWNLOAD_DIR}
 
 Cleanup Download Folder
+    Close All Pdfs
     Empty Directory    ${DOWNLOAD_DIR}
     Close All Browsers
 

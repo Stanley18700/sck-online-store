@@ -1,0 +1,229 @@
+{
+	"info": {
+		"_postman_id": "3f8ac003-9d21-4b0e-8c55-71b2c4d90a17",
+		"name": "003-Point-Calculate",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TSS-PC-001",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Response message should be 'Logged in successfully.'\", function () {",
+									"    pm.expect(jsonData.message).to.eql(\"Logged in successfully.\");",
+									"});",
+									"",
+									"pm.variables.set(\"access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/login",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calculate Point",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const expectedPoint = parseInt(pm.variables.get(\"expected_point\"));",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"point\": {",
+									"        \"type\": \"integer\"",
+									"    }",
+									"};",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test('Response body schema is valid', function () {",
+									"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+									"});",
+									"",
+									"pm.test(`Receive point should be ${expectedPoint}`, function () {",
+									"    pm.expect(jsonData.point).to.eql(expectedPoint);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/point/calculate?amount={{amount}}",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"point",
+								"calculate"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "{{amount}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TSA-PC-001",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json()",
+									"",
+									"pm.variables.set(\"access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/login",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calculate Point with invalid amount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error message should be 'amount must be a number'\", function () {",
+									"    pm.expect(pm.response.text()).to.eql(\"amount must be a number\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/point/calculate?amount={{amount}}",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"point",
+								"calculate"
+							],
+							"query": [
+								{
+									"key": "amount",
+									"value": "{{amount}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	}
+}

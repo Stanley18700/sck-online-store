@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 type PointGateway struct {
@@ -38,6 +39,33 @@ func (gateway PointGateway) GetPoints(ctx context.Context, uid int) ([]Point, er
 	}
 
 	return PointGatewayResponse, nil
+}
+
+func (gateway PointGateway) CalculatePoint(ctx context.Context, amount float64) (int, error) {
+	endPoint := gateway.PointEndpoint + "/api/v1/point/calculate?amount=" + strconv.FormatFloat(amount, 'f', -1, 64)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endPoint, nil)
+	if err != nil {
+		return 0, err
+	}
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	if response.StatusCode != 200 {
+		return 0, fmt.Errorf("response is not ok but it's %d", response.StatusCode)
+	}
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0, err
+	}
+
+	var PointGatewayResponse TotalPoint
+	err = json.Unmarshal(responseData, &PointGatewayResponse)
+	if err != nil {
+		return 0, err
+	}
+
+	return PointGatewayResponse.Point, nil
 }
 
 func (gateway PointGateway) CreatePoint(ctx context.Context, uid int, body Point) (Point, error) {

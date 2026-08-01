@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"store-service/internal/cart"
+	"store-service/internal/point"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -54,8 +55,12 @@ func Test_GetCart_Should_be_Have_Data_and_Receive_Point_4(t *testing.T) {
 	mockCartRepository := new(mockCartRepository)
 	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
 
+	mockPointInterface := new(mockPointInterface)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.81).Return(point.TotalPoint{Point: 4}, nil)
+
 	cartService := cart.CartService{
 		CartRepository: mockCartRepository,
+		PointService:   mockPointInterface,
 	}
 	actual, err := cartService.GetCart(context.Background(), uid)
 
@@ -132,8 +137,12 @@ func Test_AddCart_Input_Submitted_First_Product_Should_be_Have_1_Quantity_and_Re
 	}
 	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
 
+	mockPointInterface := new(mockPointInterface)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 4314.6).Return(point.TotalPoint{Point: 43}, nil)
+
 	cartService := cart.CartService{
 		CartRepository: mockCartRepository,
+		PointService:   mockPointInterface,
 	}
 	actual, err := cartService.AddCart(context.Background(), uid, submitedCart)
 
@@ -196,8 +205,12 @@ func Test_AddCart_Input_Submitted_More_Product_Should_be_Have_2_Quantity_and_Rec
 	}
 	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
 
+	mockPointInterface := new(mockPointInterface)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 8629.19).Return(point.TotalPoint{Point: 86}, nil)
+
 	cartService := cart.CartService{
 		CartRepository: mockCartRepository,
+		PointService:   mockPointInterface,
 	}
 	actual, err := cartService.AddCart(context.Background(), uid, submitedCart)
 
@@ -254,8 +267,12 @@ func Test_UpdateCart_Input_Submitted_Quantity_2_Should_be_Have_2_Quantity_and_Re
 	}
 	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
 
+	mockPointInterface := new(mockPointInterface)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 931.62).Return(point.TotalPoint{Point: 9}, nil)
+
 	cartService := cart.CartService{
 		CartRepository: mockCartRepository,
+		PointService:   mockPointInterface,
 	}
 	actual, err := cartService.UpdateCart(context.Background(), uid, submitedCart)
 

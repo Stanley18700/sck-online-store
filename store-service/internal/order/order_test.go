@@ -54,6 +54,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_OrderNumber_26010695220010
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, submittedOrder.BurnPoint).Return(true, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
 
 	mockProductRepository := new(mockProductRepository)
 	mockProductRepository.On("GetProductByID", mock.Anything, submittedOrder.Cart[0].ProductID).Return(product.ProductDetail{
@@ -198,6 +199,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_No_Product_in_Order
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, 0).Return(true, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
 
 	orderService := order.OrderService{
 		PointService: mockPointInterface,
@@ -245,6 +247,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Order_Error(
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, 0).Return(true, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
 
 	mockProductRepository := new(mockProductRepository)
 	mockProductRepository.On("GetProductByID", mock.Anything, submittedOrder.Cart[0].ProductID).Return(product.ProductDetail{
@@ -336,6 +339,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Shipping_Err
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, 0).Return(true, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
 
 	mockProductRepository := new(mockProductRepository)
 	mockProductRepository.On("GetProductByID", mock.Anything, submittedOrder.Cart[0].ProductID).Return(product.ProductDetail{
@@ -441,6 +445,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Order_Produc
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, submittedOrder.BurnPoint).Return(true, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
 
 	mockProductRepository := new(mockProductRepository)
 	mockProductRepository.On("GetProductByID", mock.Anything, submittedOrder.Cart[0].ProductID).Return(product.ProductDetail{

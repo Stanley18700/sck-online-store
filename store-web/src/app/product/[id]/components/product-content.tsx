@@ -5,17 +5,26 @@ import InputQuantity from '@/components/input-quantity'
 import Header1 from '@/components/typography/header1'
 import Text from '@/components/typography/text'
 import useOrderStore from '@/hooks/use-order-store'
+import calculatePointService from '@/services/calculate-point'
 import addToCartService from '@/services/cart/add-to-cart'
 import { ProductDetailType } from '@/services/product-detail'
 import { converNumber, convertCurrency, isNumber } from '@/utils/format'
-import { receiptPoint } from '@/utils/point'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ----------------------------------------------------------------------
 
 const ProductContent = (product: ProductDetailType) => {
   const [quantity, setQuantity] = useState(1)
+  const [receivePoint, setReceivePoint] = useState<number | null>(null)
   const { getProductListInCart } = useOrderStore()
+
+  useEffect(() => {
+    const fetchReceivePoint = async () => {
+      const result = await calculatePointService(product.product_price_thb)
+      setReceivePoint(result.data ? result.data.point : 0)
+    }
+    fetchReceivePoint()
+  }, [product.product_price_thb])
 
   const handleQuantityChange = (e: { target: { value: string } }) => {
     if (isNumber(e.target.value)) {
@@ -80,13 +89,15 @@ const ProductContent = (product: ProductDetailType) => {
       >
         {convertCurrency(product.product_price_thb, 'THB')}
       </Text>
-      <Text
-        id="product-detail-point"
-        size="md"
-        className="text-sm font-medium tracking-tight text-gray-400"
-      >
-        {`${converNumber(receiptPoint(product.product_price_thb))} Points`}
-      </Text>
+      {receivePoint !== null && (
+        <Text
+          id="product-detail-point"
+          size="md"
+          className="text-sm font-medium tracking-tight text-gray-400"
+        >
+          {`${converNumber(receivePoint)} Points`}
+        </Text>
+      )}
 
       <form className="mt-6">
         <InputQuantity

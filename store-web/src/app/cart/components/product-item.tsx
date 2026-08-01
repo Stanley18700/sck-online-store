@@ -5,10 +5,10 @@ import Image from '@/components/image'
 import InputQuantity from '@/components/input-quantity'
 import Text from '@/components/typography/text'
 import useOrderStore from '@/hooks/use-order-store'
+import calculatePointService from '@/services/calculate-point'
 import { ProductDetailInCart } from '@/services/cart/get-product-list'
 import updateProductInCartService from '@/services/cart/update-product'
 import { converNumber, convertCurrency, isNumber } from '@/utils/format'
-import { receiptPoint } from '@/utils/point'
 import { useEffect, useState } from 'react'
 
 // ----------------------------------------------------------------------
@@ -27,6 +27,7 @@ const ProductItem = ({
   isHiddenLable = false
 }: ProductItemProps) => {
   const [newQuantity, setNewQuantity] = useState(quantity)
+  const [receivePoint, setReceivePoint] = useState<number | null>(null)
   const { getProductListInCart } = useOrderStore()
 
   const handleQuantityChange = (e: { target: { value: string } }) => {
@@ -104,6 +105,14 @@ const ProductItem = ({
     setNewQuantity(quantity)
   }, [quantity])
 
+  useEffect(() => {
+    const fetchReceivePoint = async () => {
+      const result = await calculatePointService(product_price_thb * quantity)
+      setReceivePoint(result.data ? result.data.point : 0)
+    }
+    fetchReceivePoint()
+  }, [product_price_thb, quantity])
+
   return (
     <li className="flex py-6">
       <div className="h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
@@ -127,14 +136,14 @@ const ProductItem = ({
               <p id={`product-${product_id}-price`} className="ml-4">
                 {convertCurrency(product_price_thb * quantity, 'THB')}
               </p>
-              <p
-                id={`product-${product_id}-point`}
-                className="ml-4 text-sm text-gray-600"
-              >
-                {`${converNumber(
-                  receiptPoint(product_price_thb * quantity)
-                )} Points`}
-              </p>
+              {receivePoint !== null && (
+                <p
+                  id={`product-${product_id}-point`}
+                  className="ml-4 text-sm text-gray-600"
+                >
+                  {`${converNumber(receivePoint)} Points`}
+                </p>
+              )}
             </div>
           </div>
           <Text

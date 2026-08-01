@@ -107,6 +107,13 @@ func (orderService OrderService) CreateOrder(ctx context.Context, uid int, submi
 		return Order{}, err
 	}
 
+	earnPoint, err := orderService.PointService.CalculatePoint(ctx, totalPriceTHB)
+	if err != nil {
+		slog.ErrorContext(ctx, "PointService.CalculatePoint failed",
+			"log_type", "error", "error_code", "POINT_CALCULATE_FAILED", "error_message", err.Error(), "user_id", uid)
+		return Order{}, err
+	}
+
 	orderDetail := OrderDetail{
 		OrderNumber:      orderNumber,
 		ShippingMethodID: submitedOrder.ShippingMethodID,
@@ -116,7 +123,7 @@ func (orderService OrderService) CreateOrder(ctx context.Context, uid int, submi
 		TotalPrice:       totalPriceTHB + shippingFeeTHB,
 		ShippingFee:      shippingFeeTHB,
 		BurnPoint:        submitedOrder.BurnPoint,
-		EarnPoint:        common.CalculatePoint(totalPriceTHB),
+		EarnPoint:        earnPoint.Point,
 	}
 
 	orderID, err := orderService.OrderRepository.CreateOrder(ctx, uid, orderDetail)

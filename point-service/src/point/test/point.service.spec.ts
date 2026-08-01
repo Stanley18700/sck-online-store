@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreatePointDto } from '../point.dto';
@@ -48,7 +47,9 @@ describe('PointService', () => {
       updated: '2024-08-25T09:06:58',
     } as CreatePointDto;
 
-    jest.spyOn(mockPointRepository, 'save').mockReturnValue(createPointResponse);
+    jest
+      .spyOn(mockPointRepository, 'save')
+      .mockReturnValue(createPointResponse);
 
     // act
     const result = await service.deductPoint(createPointInput);
@@ -57,6 +58,90 @@ describe('PointService', () => {
     expect(mockPointRepository.save).toBeCalled();
     expect(mockPointRepository.save).toBeCalledWith(createPointInput);
     expect(result).toEqual(createPointResponse);
+  });
+
+  it('Calculate => Should return 10 points from amount 1000', () => {
+    // arrange
+    const amount = 1000;
+    const expected = 10;
+
+    // act
+    const result = service.calculatePoint(amount);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Calculate => Should return 10 points from amount 1060', () => {
+    // arrange
+    const amount = 1060;
+    const expected = 10;
+
+    // act
+    const result = service.calculatePoint(amount);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Calculate => Should return 0 points from amount 60', () => {
+    // arrange
+    const amount = 60;
+    const expected = 0;
+
+    // act
+    const result = service.calculatePoint(amount);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Calculate => Should return 0 points from amount 0', () => {
+    // arrange
+    const amount = 0;
+    const expected = 0;
+
+    // act
+    const result = service.calculatePoint(amount);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Calculate => Should return 1 point from amount 100', () => {
+    // arrange
+    const amount = 100;
+    const expected = 1;
+
+    // act
+    const result = service.calculatePoint(amount);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Calculate => Should return 5 points from amount 599.999', () => {
+    // arrange
+    const amount = 599.999;
+    const expected = 5;
+
+    // act
+    const result = service.calculatePoint(amount);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Calculate => Should return 0 points from amount -599.999', () => {
+    // arrange
+    const amount = -599.999;
+    const expected = 0;
+
+    // act
+    const result = service.calculatePoint(amount);
+
+    // assert
+    expect(result).toEqual(expected);
   });
 
   it('Find => should return an array of point', async () => {
@@ -80,5 +165,4 @@ describe('PointService', () => {
     expect(result).toEqual(points);
     expect(mockPointRepository.find).toBeCalled();
   });
-
 });
