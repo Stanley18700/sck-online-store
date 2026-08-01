@@ -1,174 +1,226 @@
-# BC-1 Walkthrough — Point Calculation via Point-Service
+# BC-1 — Point Calculation via Point-Service (Team Walkthrough)
 
-> Speaking script for the team + instructor demo. Branch `BC-1` (7 commits on top of team
-> main `440ebc2`). File references are `path:line` — clickable in VS Code, valid on this
-> branch. To see any commit mentioned: `git show <hash>`.
+This document explains, in simple words, what the `BC-1` branch does and why.
+Every blue link opens the real code. On GitHub, the link also jumps to the exact line.
 
----
-
-## 1. The instruction, and where we started
-
-Our task: **point calculation must come from point-service, not store-service** (board steps
-①②), write API tests in Postman and UI tests in Robot (③④), execute until 100% pass (⑤–⑦),
-commit (⑧). The business condition under test is **BC1: "For every 50.00 THB spent on
-purchased products, 1 reward point is earned."**
-
-## 2. How the calculation is linked via point-service (the architecture)
-
-The rule lives in exactly **one place** — point-service — and everything else calls it over
-HTTP. Nothing computes points locally anymore.
-
-```
- store-web                 store-service                    point-service
- (display only)            (orchestrator, no rule)          (OWNS the rule)
-──────────────            ─────────────────────            ──────────────────
- product page ──┐
- cart line    ──┼─► GET /api/v1/point/calculate ──► gateway ──► GET :8001/api/v1/point/calculate
- checkout     ──┘         (JWT-protected)                        floor(amount / POINT_RATE)
-                          cart & order flows also
-                          call the same gateway
-```
-
-**The owner — point-service:**
-- `point-service/src/point/point.constant.ts:1` — `POINT_RATE = 50`. The single source of
-  truth for the rate.
-- `point-service/src/point/point.service.ts:20-21` — the entire business rule:
-  `amount < 0 ? 0 : Math.floor(amount / POINT_RATE)`.
-- `point-service/src/point/point.controller.ts:23-24` — exposed as `GET /point/calculate`
-  (global prefix makes it `/api/v1/point/calculate`); validates `amount`, returns
-  `{ "point": n }`. Invalid input → 400 `amount must be a number`.
-
-**The bridge — store-service (no calculation, only delegation):**
-- `store-service/internal/point/gateway.go:44-45` — the HTTP client:
-  builds `http://point-service:8001/api/v1/point/calculate?amount=…` and parses the JSON
-  reply. This is the *only* wire between the services.
-- `store-service/internal/point/point.go:63-64` — thin service wrapper around the gateway,
-  so domain code depends on an interface (`point.go:13`), which is what the unit tests mock.
-- Three consumers, all delegating:
-  - `store-service/internal/cart/cart.go:49` — cart summary's `receive_point`
-  - `store-service/internal/order/order.go:110` — the order's persisted `earn_point`
-  - `store-service/cmd/api/point.go:87` + `store-service/cmd/main.go:255` — a passthrough
-    endpoint so the frontend can ask for a preview (JWT-protected, inside the `protected`
-    group)
-
-**The consumer — store-web (displays, never computes):**
-- `store-web/src/services/calculate-point.ts:13-17` — calls store-service's passthrough.
-- `store-web/src/app/product/[id]/components/product-content.tsx` and the cart's
-  `product-item.tsx` — render whatever the backend returns.
-
-**The proof that store-service no longer calculates:** the old calculator files are *gone* —
-`store-service/internal/common/point.go` (deleted in commit `11ec093`) and the frontend mirror
-`store-web/src/utils/point.ts` + `config.pointRate` (deleted in `3f0a9b6`). A repo-wide grep
-for `/ 50` or `Math.floor(amount` hits only point-service. Changing the rate touches one
-constant, one service, one deploy.
-
-> Why this matters (say this sentence): *"Before, the rate lived in three places — Go, the
-> frontend, and the tests — and they drifted. Now the rule has one owner; store-service is a
-> client of it, like any other microservice consumer."*
-
-## 3. What we found when we audited it (for the team)
-
-**Finding 1 — the rate had silently reverted to 100.**
-The refactor branch was cut *from* the `100 → 50` commit (`8b53620`) but reintroduced the
-rate as `POINT_RATE = 100` in the new constant file, then deleted every rate-50 source. No
-commit message mentioned it, and since all test fixtures also said 100, nothing failed — the
-revert was invisible. Lesson: when a rule moves between services, its *value* travels by hand.
-
-Fix: commit `0e6f1c8` — the semantic change is **one line**
-(`point-service/src/point/point.constant.ts:1`); the other 15 files are expectations catching
-up (Jest specs, Newman data, Robot values, Go mocks).
-
-**Finding 2 — main's Docker build was broken.**
-The merge resurrected `store-web/src/__test__/point.cy.ts`, which imports the deleted
-`utils/point.ts`. `npm run dev` never compiles orphaned test files, so nobody saw it locally —
-but `next build` (Docker) fails. Fix: commit `fd37329` (file deleted).
-
-**Finding 3 — one hidden expectation lives in the collection, not the data.**
-`TSS-AUTH-003` adds the bicycle twice; its second cart assertion gets its expected points from
-a **hardcoded pre-request script** — `atdd/api/collections/001-Authentication.postman_collection.json:2617`
-— not from the data file. Fix: commit `fe27d64` (86 → 172). Lesson: grep the collections too,
-not just `data/`.
-
-## 4. The planted traps (for the instructor)
-
-Three deliberately planted bugs, all committed 2025-05-23 by the workshop host — one with a
-literally confessing message.
-
-**Trap 1 — Product 3 shows a negative price and 0 points.**
-Commit `ddfdf90`: *"[Added] bug for product id 3 that show minus sign(-) for price and
-point."* Three client-side lines in `store-web/src/services/product-detail.ts` negated
-`product_price_thb` after the API responded. The 0 Points was a second-order effect: the
-negated value reached the calculator, whose `amount < 0` guard
-(`point-service/src/point/point.service.ts:21`) correctly returned 0 — **the guard was
-masking the bug, not causing it**. The tell: the product *list* page showed the correct
-+฿897.45; only the detail page flipped. Fix: commit `6abf049`.
-
-**Trap 2 — Product 7's detail page always 500s.**
-`if ID == 7 { return error }` sat in the product *service*
-(`store-service/internal/product/product.go`, now removed) — but order creation calls the
-*repository* directly, so the item still ordered fine while its page failed. The
-inconsistency was the tell. Fix: commit `85bc2ef`.
-
-**Trap 3 — Product 8's cart line never matches the subtotal.**
-`+0.01` was added to the displayed price only (`store-service/internal/cart/cart.go`, now
-removed); the subtotal used the raw price — ฿717.61 vs ฿717.60. Designed to break exact-value
-assertions. Fix: commit `6ea56f9`.
-
-Also catalogued (data traps, deliberately **not** "fixed" — they are legitimate test inputs):
-two zero-price products (ids 1044, 1339 in `tearup/store/init.sql`) and eight boundary
-products at 1.39/2.78 USD whose THB value straddles the 50-baht point boundary between the
-cart's 2-dp and the order's 6-dp rounding.
-
-## 5. Red → green, per the board (steps ⑤–⑦)
-
-The tests genuinely failed first, as the board intended (`FAILED = valid point == …`):
-first run after rate 50 → TSS-AUTH-001 failed 27 assertions, TSS-AUTH-003 failed 2. We fixed
-data, collection, and code until:
-
-| Layer | Result |
-|---|---|
-| Newman (001: 6 folders · 002: 2 · 003: 2) | **10/10 folders, 423 assertions, 0 failures** |
-| Robot (001 + 002) | **5 suites, 6 tests, 0 failures** |
-| Go unit | 8 packages ok |
-| Jest (point-service, rate-50 specs) | 17/17 |
-| Cypress | 34/34 |
-
-Verified in the browser: bicycle earns **86** (4,314.60 ÷ 50) on product page, cart, and PDF.
-
-> Note for the instructor: the board's expected value was **80**, which assumes the
-> 33.52 THB/USD example rate. The repo hardcodes 35.969964
-> (`store-service/internal/common/currency.go:11`), giving 86. Question: should the class
-> standardize on 33.52 — and if so, should the FX rate come from an API as discussed? That
-> decision shifts every expected value.
-
-## 6. Scope: what BC-1 does NOT include
-
-Only the first business condition is implemented. Still open:
-
-| Condition | Missing |
-|---|---|
-| 2 points = 1.00 THB (Spending) | burn math is still 1:1 (`store-web/src/utils/total-price.ts:18`) and the checkout Discount UI is commented out (`store-web/src/app/checkout/view.tsx:91`) |
-| 180-day validity | no date columns on the `points` table (`point-service/src/point/point.entity.ts` — six columns only) |
-| Approved on confirm receipt | no such endpoint or UI exists; earned points are never credited to the ledger (the only ledger write is the burn path, `store-service/internal/point/point.go:53`) |
-| Status table (4 statuses) | no status concept anywhere in point-service |
-
-Known debt (deferred deliberately): no HTTP timeout and no `Body.Close()` in
-`store-service/internal/point/gateway.go`; a point-service outage currently 500s the whole
-cart (`store-service/internal/cart/cart.go:49-53`). The cart uses 2-dp
-(`cart.go:44`) and the order 6-dp (`order.go:86-88`) for the same amount — visible with the
-2.78 USD products.
-
-Test gap worth closing next: `atdd/api/data/003-Point-Calculate/TSS-PC-001.json` doesn't test
-the requirement's own BVA triplet (50.00 → 1, 45.00 → 0, 389.00 → 7). Three data rows to add.
-
-## 7. For the team: about branch `Pai`
-
-Please don't merge `Pai` as-is: it conflicts with main on the Robot teardown keyword, predates
-the `Close All Pdfs` fix, its rate-50 point values are already superseded by BC-1, and its
-UUID download folder never cleans up. Suggest rebasing it on BC-1 and keeping only the
-UUID-directory idea, with cleanup restored in both PDF suites.
+> สรุป: เอกสารนี้อธิบายว่า BC-1 ทำอะไร — ย้ายการคำนวณแต้มไปที่ point-service,
+> แก้บั๊กที่อาจารย์ซ่อนไว้ 3 ตัว, เปลี่ยนอัตราเป็น 50 บาท = 1 แต้ม, และทำให้เทสต์ผ่าน 100%
 
 ---
 
-*Branch `BC-1` is on the NyanSintZaw fork (no push rights to the team repo — Stanley can add
-collaborators, or take this via PR).*
+## 1. What was the task?
+
+From the whiteboard, our instruction had 8 steps:
+
+1. Change the point rate: **100 THB → 50.00 THB = 1 point**
+2. The point calculation must be done by **point-service**, not store-service
+3. Write API tests (Postman)
+4. Write UI tests (Robot Framework)
+5. Run the API tests → they **fail first** (this is normal and expected!)
+6. Fix the code until tests pass **100%**
+7. Run the UI tests until they pass **100%**
+8. Commit to the repo
+
+**All 8 steps are done.** This branch is the result.
+
+> สรุป: งานคือเปลี่ยนอัตราแต้มเป็น 50 บาทต่อ 1 แต้ม และให้ point-service เป็นคนคำนวณ
+> ตอนนี้ทำครบทั้ง 8 ขั้นตอนแล้ว
+
+---
+
+## 2. How does the calculation work now?
+
+Think of it like this: **the calculator lives in one room only.**
+That room is point-service. Everyone else must knock on its door and ask.
+
+```
+ store-web              store-service               point-service
+ (the website)          (the shop backend)          (the CALCULATOR)
+─────────────          ──────────────────          ─────────────────
+ shows the number  ──►  asks point-service  ──►     amount ÷ 50
+ never calculates       never calculates            answers: { "point": 86 }
+```
+
+### The calculator (point-service)
+
+- The rate is **one line of code**:
+  [point.constant.ts — line 1](../point-service/src/point/point.constant.ts#L1)
+  → `POINT_RATE = 50`
+- The whole rule is **two lines**:
+  [point.service.ts — line 20](../point-service/src/point/point.service.ts#L20)
+  → take the amount, divide by 50, round down. Negative amount → 0 points.
+- Other services call it through this door:
+  [point.controller.ts — line 23](../point-service/src/point/point.controller.ts#L23)
+  → `GET /api/v1/point/calculate?amount=4314.6` answers `{ "point": 86 }`
+
+### The messenger (store-service)
+
+store-service does **not** calculate anymore. It only sends the amount and waits for the answer:
+
+- The HTTP call to point-service:
+  [gateway.go — line 44](../store-service/internal/point/gateway.go#L44)
+- Used by the cart page: [cart.go — line 49](../store-service/internal/cart/cart.go#L49)
+- Used when creating an order: [order.go — line 110](../store-service/internal/order/order.go#L110)
+- The website can also ask through this route:
+  [main.go — line 255](../store-service/cmd/main.go#L255) (login required)
+
+### The display (store-web)
+
+The website only **shows** the number it receives:
+[calculate-point.ts — line 13](../store-web/src/services/calculate-point.ts#L13)
+
+### How do we know store-service does not calculate?
+
+Because the old calculator files are **deleted**:
+- `store-service/internal/common/point.go` — gone
+- `store-web/src/utils/point.ts` — gone
+
+If you search the whole project for "divide by 50", you find it **only** in point-service.
+
+**Why is this good?** Before, the rate 100 was written in 3 different places (Go code,
+website code, tests). They could disagree — and they did (see next section). Now, changing
+the rate = changing **one line, in one file, in one service**.
+
+> สรุป: point-service เป็นคนคำนวณคนเดียว (หาร 50 ปัดเศษลง) — store-service แค่ส่งจำนวนเงินไปถาม
+> แล้วเว็บก็แค่แสดงผล ไฟล์คำนวณเก่าถูกลบหมดแล้ว
+
+---
+
+## 3. Problems we found and fixed
+
+### Problem 1: The rate secretly went back to 100 ⚠️ (most important)
+
+The team changed 100 → 50 (commit `8b53620`). Good.
+But the new point-service code was written with **100** again, and the old 50 code was deleted.
+Result: the rate went back to 100 — and **no test failed**, because the tests also said 100.
+
+**Fix (commit `0e6f1c8`):** change
+[point.constant.ts — line 1](../point-service/src/point/point.constant.ts#L1) to 50,
+and update all the test numbers to match (43 → 86, 9 → 18, 52 → 104, and so on).
+
+**Lesson:** when code moves to a new service, the *number inside it* does not move
+automatically. A person must carry it.
+
+### Problem 2: The Docker build of the website was broken
+
+A merge brought back a deleted test file (`point.cy.ts`) that imports a file which no longer
+exists. On our laptops (`npm run dev`) everything looked fine. But Docker build failed.
+**Fix (commit `fd37329`):** delete the file.
+
+### Problem 3: One test number was hiding inside the Postman collection
+
+Almost all expected numbers live in the data files (`atdd/api/data/...`).
+But one number was hardcoded inside the collection itself:
+[001-Authentication.postman_collection.json — line 2617](../atdd/api/collections/001-Authentication.postman_collection.json#L2617)
+**Fix (commit `fe27d64`):** 86 → 172 (a cart with two bicycles).
+**Lesson:** when updating test numbers, search the collection files too, not only the data files.
+
+> สรุป: เจอ 3 ปัญหา — อัตราแอบกลับไปเป็น 100 (แก้เหลือบรรทัดเดียว), Docker build เว็บพัง,
+> และมีเลขเทสต์ซ่อนอยู่ใน collection ไม่ใช่ data file
+
+---
+
+## 4. The instructor's hidden bugs (the traps) 🪤
+
+The instructor planted 3 bugs on purpose. One commit message even says it directly:
+*"[Added] bug for product id 3 that show minus sign(-) for price and point"* (commit `ddfdf90`).
+
+### Trap 1: Product 3 shows a minus price and 0 points
+
+The website code **flipped the price to negative** after receiving it from the API
+(only on the detail page). The negative price then went to the calculator, and the
+calculator correctly answers 0 for negative amounts. So "0 Points" was not the real bug —
+it was a *symptom*.
+
+**How we caught it:** the product **list** page showed the correct price (+฿897.45).
+Only the **detail** page showed minus. Same product, two different prices → the bug must be
+in the detail page code. **Fix: commit `6abf049`.**
+
+### Trap 2: Product 7's page always shows an error
+
+Hidden code: `if ID == 7 → return error`. But you could still **buy** product 7,
+because ordering uses a different code path.
+**How we caught it:** a product you can buy but cannot look at is very strange.
+**Fix: commit `85bc2ef`.**
+
+### Trap 3: Product 8's price in the cart never matches the total
+
+Hidden code added **+0.01** to the displayed price only. Line shows ฿717.61,
+total shows ฿717.60. Made to break exact-value test assertions.
+**Fix: commit `6ea56f9`.**
+
+To see any fix: `git show <commit>` in the terminal.
+
+Also good to know (we did **not** change these — they are valid test data):
+- 2 products with price 0 (ids 1044, 1339)
+- 8 products at 1.39/2.78 USD that sit exactly on the 50-baht point boundary
+
+> สรุป: อาจารย์ซ่อนบั๊กไว้ 3 ตัว — สินค้า 3 ราคาติดลบ (เว็บกลับเครื่องหมายเอง),
+> สินค้า 7 เปิดหน้าไม่ได้แต่ซื้อได้, สินค้า 8 ราคาในตะกร้าไม่ตรงกับยอดรวม แก้หมดแล้ว
+
+---
+
+## 5. Test results — everything passes ✅
+
+The tests **failed first** (step 5 of the board — this is the ATDD way), then we fixed
+until green:
+
+| Test | Result |
+|---|---|
+| Postman/Newman — 3 suites, 10 folders | **423 assertions, 0 failed** |
+| Robot UI — 2 suites | **6 tests, 0 failed** |
+| Go unit tests | 8 packages, all pass |
+| Jest (point-service) | 17 tests, all pass |
+| Cypress (store-web) | 34 tests, all pass |
+
+Check in the browser: the Balance Training Bicycle now shows **86 points**
+(4,314.60 ÷ 50 = 86).
+
+**Question for the instructor:** the whiteboard example said **80 points**, using the
+exchange rate 33.52. Our code uses the old hardcoded rate 35.969964
+([currency.go — line 11](../store-service/internal/common/currency.go#L11)), which gives 86.
+Which rate should the class use? This decision changes every expected number.
+
+> สรุป: เทสต์ผ่านหมดทุกชั้น รถจักรยานได้ 86 แต้ม — แต่ต้องถามอาจารย์เรื่องเรต 33.52 (ได้ 80)
+> กับ 35.97 (ได้ 86) ว่าจะใช้ตัวไหน
+
+---
+
+## 6. What is NOT done yet
+
+BC-1 covers only the **first** business condition. Still to do:
+
+| Business condition | What is missing |
+|---|---|
+| 2 points = 1.00 THB discount | spend code still thinks 1 point = 1 THB ([total-price.ts — line 18](../store-web/src/utils/total-price.ts#L18)); the discount box at checkout is switched off ([view.tsx — line 91](../store-web/src/app/checkout/view.tsx#L91)) |
+| Points valid 180 days | the points table has **no date columns** at all ([point.entity.ts](../point-service/src/point/point.entity.ts)) |
+| Approve on confirm receipt | this button/endpoint does not exist yet; earned points are **never saved** to the point ledger |
+| Point status (Pending / Approved / Redeemed / Expired) | no status exists anywhere yet |
+
+Also known (not fixed on purpose, team decision): if point-service is down, the cart page
+shows an error; the HTTP call has no timeout.
+
+Small test gap: the requirement's own three examples (50.00 → 1, 45.00 → 0, 389.00 → 7)
+are not in the test data yet — three rows to add in
+[TSS-PC-001.json](../atdd/api/data/003-Point-Calculate/TSS-PC-001.json).
+
+> สรุป: เสร็จแค่เงื่อนไขแรก ยังเหลือ ฝั่งใช้แต้ม (2 แต้ม = 1 บาท), วันหมดอายุ 180 วัน,
+> ปุ่มยืนยันรับสินค้า และสถานะแต้ม 4 แบบ
+
+---
+
+## 7. About the `Pai` branch
+
+Please **do not merge `Pai` yet**. Reasons:
+- It conflicts with the newest code (the Robot cleanup keyword)
+- Its point numbers are already included in BC-1
+- Its download folder is never cleaned → files pile up forever
+
+Better plan: rebase `Pai` on top of BC-1, keep only the unique-folder idea, and add a
+cleanup step.
+
+> สรุป: อย่าเพิ่ง merge branch Pai — ให้ rebase ทับ BC-1 ก่อน
+
+---
+
+*Branch `BC-1` is on the NyanSintZaw fork. PR #3 targets Stanley's `BC1` branch.*
