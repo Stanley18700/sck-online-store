@@ -46,7 +46,6 @@ func (pointService PointService) DeductPoint(ctx context.Context, uid int, submi
 	}
 
 	point := Point{
-		OrgID:  1,
 		UserID: 1,
 		Amount: submitedPoint.Amount,
 	}

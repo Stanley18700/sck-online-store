@@ -86,7 +86,7 @@ export class PointController {
   @Post()
   async createPoint(@Body() body: CreatePointDto) {
     this.logger.log(
-      `POST /point request received: userId=${body.userId}, orgId=${body.orgId}, amount=${body.amount}`,
+      `POST /point request received: userId=${body.userId}, amount=${body.amount}`,
     );
     otelLogger.emit({
       severityNumber: SeverityNumber.INFO,
@@ -97,7 +97,6 @@ export class PointController {
         event: 'deduct_points_request',
         entity_type: 'point',
         actor_id: body.userId,
-        org_id: body.orgId,
         amount: body.amount,
       },
     });

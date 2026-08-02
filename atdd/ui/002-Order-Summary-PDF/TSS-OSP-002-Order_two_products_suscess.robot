@@ -19,18 +19,18 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
     เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่    /auth/login    login-page
     เข้าสู่ระบบ    login-username-input    user_3    login-password-input    P@ssw0rd
     เลือกดูสินค้า    product-card-name-1    Balance Training Bicycle
-    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    86
+    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,044.71    80
     เพิ่มสินค้าลงตะกร้าและมีสินค้าจำนวน    1
     กลับไปที่หน้า homepage
     เลือกดูสินค้า    product-card-name-2    43 Piece dinner Set
     เพิ่มสินค้าลงตะกร้าและมีสินค้าจำนวน    2
     เพิ่มสินค้าลงตะกร้าและมีสินค้าจำนวน    2
     
-    ${product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=86    price=4,314.60    qty=1
-    ${product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=18    price=931.62      qty=2
+    ${product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=80    price=4,044.71    qty=1
+    ${product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=17    price=873.35      qty=2
     ${product-list}=    Create List    ${product1}    ${product2}
 
-    ตรวจสอบข้อมูลรายการสินค้าในตะกร้า และ Checkout    ${product-list}    5,246.22
+    ตรวจสอบข้อมูลรายการสินค้าในตะกร้า และ Checkout    ${product-list}    4,918.06
     ใส่ที่อยู่จัดส่งสินค้า    
     ...    ณัฐพล    ศรีสมบัติ    
     ...    43/8 หมู่บ้านเปี่ยมสุข ถนนลาดพร้าว ซอย 63    กรุงเทพมหานคร
@@ -39,17 +39,17 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
     เลือกวิธีจัดส่งสินค้าเป็น    kerry
     ตรวจสอบค่าจัดส่งสินค้าของ Kerry เท่ากันกับ 50.00 บาท    kerry    50.00
     เลือกช่องทางการชำระเงินแบบ VISA Credit Card    Nattapon Srisombat    5123 4500 0000 0008    01/39    100
-    ตรวจสอบราคารวมที่ต้องชำระเงิน ต้องเท่ากันกับ    5,296.22
+    ตรวจสอบราคารวมที่ต้องชำระเงิน ต้องเท่ากันกับ    4,968.06
     ยืนยัน OTP
     ตรวจสอบหมายเลขพัสดุว่าต้องขึ้นต้นด้วย    KR
     กดดาวน์โหลดไฟล์
 
-    ${order-product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=86    price=4,314.60    qty=1    total=4,314.60
-    ${order-product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=9    price=465.81      qty=2    total=931.62
+    ${order-product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=80    price=4,044.71    qty=1    total=4,044.71
+    ${order-product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=8    price=436.67      qty=2    total=873.35
     ${order-product-list}=    Create List    ${order-product1}    ${order-product2}
     ตรวขสอบข้อมูลในไฟล์ PDF    Michael    James    KR    credit
     ...    ${order-product-list}
-    ...    5,246.22    thai_post    5,296.22    104
+    ...    4,918.06    thai_post    4,968.06    98
 
 *** Keywords ***
 Setup Folder For Download

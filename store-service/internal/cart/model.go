@@ -26,9 +26,13 @@ type CartDetail struct {
 	Price        float64 `json:"product_price" db:"product_price"`
 	PriceTHB     float64 `json:"product_price_thb"`
 	PriceFullTHB float64 `json:"product_price_full_thb"`
-	Image        string  `json:"product_image" db:"image_url"`
-	Stock        int     `json:"stock" db:"stock"`
-	Brand        string  `json:"product_brand" db:"product_brand"`
+	// LineTotalTHB is price x quantity rounded once. Clients must display this
+	// instead of multiplying PriceTHB, which is already rounded.
+	LineTotalTHB     float64 `json:"line_total_thb"`
+	LineTotalFullTHB float64 `json:"line_total_full_thb"`
+	Image            string  `json:"product_image" db:"image_url"`
+	Stock            int     `json:"stock" db:"stock"`
+	Brand            string  `json:"product_brand" db:"product_brand"`
 }
 
 type CartSummary struct {

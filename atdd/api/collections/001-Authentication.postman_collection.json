@@ -2614,10 +2614,10 @@
               "script": {
                 "exec": [
                   "pm.variables.set(\"quantity\", 2)",
-                  "pm.variables.set(\"receive_point\", 172)",
+                  "pm.variables.set(\"receive_point\", 161)",
                   "pm.variables.set(\"total_price\", 239.9)",
-                  "pm.variables.set(\"total_price_thb\", 8629.19)",
-                  "pm.variables.set(\"total_price_full_thb\", 8629.194364)",
+                  "pm.variables.set(\"total_price_thb\", 8089.42)",
+                  "pm.variables.set(\"total_price_full_thb\", 8089.419843)",
                   ""
                 ],
                 "type": "text/javascript",

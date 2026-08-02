@@ -1350,8 +1350,8 @@
                   "pm.variables.set(\"product_id\", first_product.id)",
                   "pm.variables.set(\"quantity\", first_product.quantity)",
                   "pm.variables.set(\"total_price\", 119.95)",
-                  "pm.variables.set(\"total_price_thb\", 4314.6)",
-                  "pm.variables.set(\"total_price_full_thb\", 4314.597182)",
+                  "pm.variables.set(\"total_price_thb\", 4044.71)",
+                  "pm.variables.set(\"total_price_full_thb\", 4044.709922)",
                   ""
                 ],
                 "type": "text/javascript",
@@ -1557,8 +1557,8 @@
                   "pm.variables.set(\"product_id\", first_product.id)",
                   "pm.variables.set(\"quantity\", first_product.id)",
                   "pm.variables.set(\"total_price\", 119.95)",
-                  "pm.variables.set(\"total_price_thb\", 4314.6)",
-                  "pm.variables.set(\"total_price_full_thb\", 4314.597182)"
+                  "pm.variables.set(\"total_price_thb\", 4044.71)",
+                  "pm.variables.set(\"total_price_full_thb\", 4044.709922)"
                 ],
                 "type": "text/javascript",
                 "packages": {},

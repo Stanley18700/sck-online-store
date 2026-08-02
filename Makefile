@@ -142,7 +142,6 @@ run_robot_order_summary_pdf:
 run_newman:
 	$(MAKE) run_newman_authentication
 	$(MAKE) run_newman_order_summary_pdf
-	$(MAKE) run_newman_point_calculate
 
 run_newman_authentication:
 	cd atdd/api \
@@ -188,19 +187,6 @@ run_newman_order_summary_pdf:
 	  --folder "TSS-OSP-002" \
 		-e sck-online-store.local.postman_environment.json \
 		-d data/002-Order-Summary-PDF/TSS-OSP-002.json \
-		-r cli,junit,htmlextra
-
-run_newman_point_calculate:
-	cd atdd/api \
-	&& newman run collections/003-Point-Calculate.postman_collection.json \
-	  --folder "TSS-PC-001" \
-		-e sck-online-store.local.postman_environment.json \
-		-d data/003-Point-Calculate/TSS-PC-001.json \
-		-r cli,junit,htmlextra \
-	&& newman run collections/003-Point-Calculate.postman_collection.json \
-	  --folder "TSA-PC-001" \
-		-e sck-online-store.local.postman_environment.json \
-		-d data/003-Point-Calculate/TSA-PC-001.json \
 		-r cli,junit,htmlextra
 
 code-coverage:

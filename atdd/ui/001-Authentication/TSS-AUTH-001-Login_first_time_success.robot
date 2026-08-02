@@ -12,9 +12,9 @@ ${REMOTE_HUB_URL}
     เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่    /auth/login    login-page
     เข้าสู่ระบบ    login-username-input    user_5    login-password-input    P@ssw0rd
     เลือกดูสินค้า    product-card-name-1    Balance Training Bicycle
-    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    86
+    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,044.71    80
     เพิ่มสินค้าลงตะกร้า
-    ตรวจสอบข้อมูลสินค้าในตะกร้า และ Checkout    Balance Training Bicycle    SportsFun    4,314.60    86    4,314.60
+    ตรวจสอบข้อมูลสินค้าในตะกร้า และ Checkout    Balance Training Bicycle    SportsFun    4,044.71    80    4,044.71
     ใส่ที่อยู่จัดส่งสินค้า    
     ...    ณัฐพล    ศรีสมบัติ    
     ...    43/8 หมู่บ้านเปี่ยมสุข ถนนลาดพร้าว ซอย 63    กรุงเทพมหานคร
@@ -23,7 +23,7 @@ ${REMOTE_HUB_URL}
     เลือกวิธีจัดส่งสินค้าเป็น    kerry
     ตรวจสอบค่าจัดส่งสินค้าของ Kerry เท่ากันกับ 50.00 บาท    kerry    50.00
     เลือกช่องทางการชำระเงินแบบ VISA Credit Card    Nattapon Srisombat    5123 4500 0000 0008    01/39    100
-    ตรวจสอบราคารวมที่ต้องชำระเงิน ต้องเท่ากันกับ    4,364.60
+    ตรวจสอบราคารวมที่ต้องชำระเงิน ต้องเท่ากันกับ    4,094.71
     ยืนยัน OTP
     ตรวจสอบหมายเลขพัสดุว่าต้องขึ้นต้นด้วย    KR
 

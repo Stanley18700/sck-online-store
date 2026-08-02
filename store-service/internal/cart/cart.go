@@ -27,6 +27,7 @@ func (cartService CartService) GetCart(ctx context.Context, uid int) (CartResult
 	}
 
 	totalPrice := 0.0
+	lineTotals := make([]common.Decimal, 0, len(carts))
 	for i := range carts {
 		c := &carts[i]
 		digit := common.ConvertToThb(c.Price)
@@ -37,10 +38,18 @@ func (cartService CartService) GetCart(ctx context.Context, uid int) (CartResult
 
 		c.PriceTHB = digit.ShortDecimal
 		c.PriceFullTHB = digit.LongDecimal
+
+		lineTotal := common.LineTotal(c.Price, c.Quantity)
+		c.LineTotalTHB = lineTotal.ShortDecimal
+		c.LineTotalFullTHB = lineTotal.LongDecimal
+		lineTotals = append(lineTotals, lineTotal)
+
 		totalPrice = totalPrice + (c.Price * float64(c.Quantity))
 	}
 
-	decimal := common.ConvertToThb(totalPrice)
+	// Sum the rounded line totals so the subtotal always equals what the customer
+	// can add up from the lines on screen.
+	decimal := common.SumLineTotals(lineTotals)
 	totalPriceTHB := decimal.ShortDecimal
 	totalPriceFullTHB := decimal.LongDecimal
 

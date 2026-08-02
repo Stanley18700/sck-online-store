@@ -16,7 +16,6 @@ func Test_DeductPoint_Input_Amount_100_Should_be_Point_100(t *testing.T) {
 	}
 	uid := 1
 	pointItem := point.Point{
-		OrgID:  1,
 		UserID: uid,
 		Amount: 100,
 	}
@@ -43,7 +42,6 @@ func Test_DeductPoint_Input_Amount_Minus_100_Should_be_Error(t *testing.T) {
 	expected := fmt.Errorf("points are not enough, please try again")
 	uid := 1
 	pointItem := point.Point{
-		OrgID:  1,
 		UserID: uid,
 		Amount: -100,
 	}
@@ -72,12 +70,10 @@ func Test_TotalPoint_Point_100_and_50_Should_be_Point_150(t *testing.T) {
 	uid := 1
 	res := []point.Point{
 		{
-			OrgID:  1,
 			UserID: 1,
 			Amount: 100,
 		},
 		{
-			OrgID:  1,
 			UserID: 1,
 			Amount: 50,
 		},
@@ -136,12 +132,10 @@ func Test_TotalPoint_Point_100_and_Minus_50_Should_be_Point_50(t *testing.T) {
 	uid := 1
 	res := []point.Point{
 		{
-			OrgID:  1,
 			UserID: 1,
 			Amount: 100,
 		},
 		{
-			OrgID:  1,
 			UserID: 1,
 			Amount: -50,
 		},

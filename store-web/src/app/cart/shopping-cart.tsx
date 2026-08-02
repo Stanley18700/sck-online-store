@@ -7,6 +7,7 @@ import SubTotal from '@/app/cart/components/sub-total'
 import ButtonLink from '@/components/button/button-link'
 import Text from '@/components/typography/text'
 import useOrderStore from '@/hooks/use-order-store'
+import { converNumber } from '@/utils/format'
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useEffect } from 'react'
 
@@ -70,6 +71,18 @@ const ShoppingCartView = ({
 
                     <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                       <SubTotal total={summary.total_price_thb} />
+
+                      <div className="mt-1 flex justify-between text-base">
+                        <Text id="shopping-cart-receive-point-label">
+                          Receive Points
+                        </Text>
+                        <Text
+                          id="shopping-cart-receive-point-price"
+                          className="text-gray-600 font-semibold"
+                        >
+                          {`${converNumber(summary.receive_point)} Points`}
+                        </Text>
+                      </div>
 
                       <Text size="sm" className="mt-0.5 text-gray-500">
                         Shipping and taxes calculated at checkout.

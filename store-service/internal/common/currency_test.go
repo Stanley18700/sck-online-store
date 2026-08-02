@@ -12,10 +12,10 @@ type Decimal struct {
 	LongDecimal  float64 `json:"long_digit"`
 }
 
-func Test_ConvertToThb_Input_123_Should_be_4424_Point_31_and_Point_305572(t *testing.T) {
+func Test_ConvertToThb_Input_123_Should_be_4147_Point_56_and_Point_555818(t *testing.T) {
 	expected := Decimal{
-		ShortDecimal: 4424.31,
-		LongDecimal:  4424.305572,
+		ShortDecimal: 4147.56,
+		LongDecimal:  4147.555818,
 	}
 
 	actual := common.ConvertToThb(123)
@@ -36,10 +36,10 @@ func Test_ConvertToThb_Input_0_Should_be_0(t *testing.T) {
 	assert.Equal(t, expected.LongDecimal, actual.LongDecimal)
 }
 
-func Test_ConvertToThb_Input_Minus_123_Should_be_Minus_4424_Point_31_and_Point_305572(t *testing.T) {
+func Test_ConvertToThb_Input_Minus_123_Should_be_Minus_4147_Point_56_and_Point_555818(t *testing.T) {
 	expected := Decimal{
-		ShortDecimal: -4424.31,
-		LongDecimal:  -4424.305572,
+		ShortDecimal: -4147.56,
+		LongDecimal:  -4147.555818,
 	}
 
 	actual := common.ConvertToThb(-123)
