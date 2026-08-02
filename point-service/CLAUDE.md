@@ -37,8 +37,8 @@ src/
     point.module.ts   — Module (imports TypeORM for Point entity)
     point.controller.ts — GET /point, POST /point
     point.service.ts  — getPoint(), deductPoint()
-    point.entity.ts   — TypeORM entity (points table: id, orgId, userId, amount, created, updated)
-    point.dto.ts      — CreatePointDto (orgId, userId, amount)
+    point.entity.ts   — TypeORM entity (points table: id, userId, amount, created, updated)
+    point.dto.ts      — CreatePointDto (userId, amount)
     test/
       point.service.spec.ts    — Service unit tests (mocked repository)
       point.controller.spec.ts — Controller unit tests (mocked service)

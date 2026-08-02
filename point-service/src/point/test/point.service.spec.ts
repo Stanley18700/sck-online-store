@@ -33,14 +33,12 @@ describe('PointService', () => {
   it('Create => Should create a new point and return its data', async () => {
     // arrange
     const createPointInput = {
-      orgId: 1,
       userId: 1,
       amount: 200,
     } as CreatePointDto;
 
     const createPointResponse = {
       id: 1,
-      orgId: 1,
       userId: 1,
       amount: 200,
       created: '2024-08-25T09:06:58',
@@ -148,7 +146,6 @@ describe('PointService', () => {
     //arrange
     const point = {
       id: 2,
-      orgId: 1,
       userId: 1,
       amount: 300,
       created: '2024-08-25T09:06:58',

@@ -67,7 +67,7 @@ export class PointService {
     try {
       const saved = await this.pointRepository.save(point);
       this.logger.log(
-        `Points deducted: userId=${point.userId}, orgId=${point.orgId}, amount=${point.amount}`,
+        `Points deducted: userId=${point.userId}, amount=${point.amount}`,
       );
       otelLogger.emit({
         severityNumber: SeverityNumber.INFO,
@@ -79,8 +79,7 @@ export class PointService {
           entity_type: 'point',
           entity_id: saved.id,
           changed_by: point.userId,
-          org_id: point.orgId,
-          amount: point.amount,
+            amount: point.amount,
         },
       });
       return saved;

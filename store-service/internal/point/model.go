@@ -5,7 +5,6 @@ type SubmitedPoint struct {
 }
 
 type Point struct {
-	OrgID  int `json:"orgId"`
 	UserID int `json:"userId"`
 	Amount int `json:"amount"`
 }

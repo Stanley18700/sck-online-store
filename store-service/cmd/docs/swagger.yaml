@@ -1,8 +1,8 @@
 definitions:
   api.OrderConfirmation:
-    description: Order confirmation response containing order ID
+    description: Order confirmation response containing order number
     properties:
-      order_id:
+      order_number:
         type: integer
     type: object
   cart.CartDetail:
@@ -101,7 +101,7 @@ definitions:
     type: object
   payment.SubmitedPayment:
     properties:
-      order_id:
+      order_number:
         type: integer
       otp:
         type: integer
@@ -110,7 +110,7 @@ definitions:
     type: object
   payment.SubmitedPaymentResponse:
     properties:
-      order_id:
+      order_number:
         type: integer
       payment_date:
         type: string
@@ -123,14 +123,17 @@ definitions:
     properties:
       amount:
         type: integer
-      orgId:
-        type: integer
       userId:
         type: integer
     type: object
   point.SubmitedPoint:
     properties:
       amount:
+        type: integer
+    type: object
+  point.TotalPoint:
+    properties:
+      point:
         type: integer
     type: object
   product.Product:
@@ -342,6 +345,34 @@ paths:
         "500":
           description: Internal Server Error
       summary: Deduct points from user
+      tags:
+      - point
+  /api/v1/point/calculate:
+    get:
+      consumes:
+      - application/json
+      description: Calculate how many points a payment amount earns (delegated to
+        point-service)
+      parameters:
+      - description: Payment amount in THB
+        in: query
+        name: amount
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/point.TotalPoint'
+        "400":
+          description: Bad request error
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+      summary: Calculate receive points from an amount
       tags:
       - point
   /api/v1/product:

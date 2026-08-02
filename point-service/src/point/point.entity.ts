@@ -11,9 +11,6 @@ export class Point {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'org_id' })
-  orgId: number;
-
   @Column({ name: 'user_id' })
   userId: number;
 

@@ -34,14 +34,12 @@ describe('PointController', () => {
   it('Create => should create a new point by a given data', async () => {
     // arrange
     const createPointInput = {
-      orgId: 1,
       userId: 1,
       amount: 200,
     } as CreatePointDto;
 
     const createPointResponse = {
       id: 1,
-      orgId: 1,
       userId: 1,
       amount: 200,
       created: '2024-08-25T09:06:58',
@@ -113,7 +111,6 @@ describe('PointController', () => {
     //arrange
     const point = {
       id: 2,
-      orgId: 1,
       userId: 1,
       amount: 300,
       created: '2024-08-25T09:06:58',

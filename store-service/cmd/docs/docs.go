@@ -312,6 +312,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/point/calculate": {
+            "get": {
+                "description": "Calculate how many points a payment amount earns (delegated to point-service)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "point"
+                ],
+                "summary": "Calculate receive points from an amount",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "Payment amount in THB",
+                        "name": "amount",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/point.TotalPoint"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/api/v1/product": {
             "get": {
                 "description": "Search for products with optional filtering",
@@ -407,10 +448,10 @@ const docTemplate = `{
     },
     "definitions": {
         "api.OrderConfirmation": {
-            "description": "Order confirmation response containing order ID",
+            "description": "Order confirmation response containing order number",
             "type": "object",
             "properties": {
-                "order_id": {
+                "order_number": {
                     "type": "integer"
                 }
             }
@@ -562,7 +603,7 @@ const docTemplate = `{
         "payment.SubmitedPayment": {
             "type": "object",
             "properties": {
-                "order_id": {
+                "order_number": {
                     "type": "integer"
                 },
                 "otp": {
@@ -576,7 +617,7 @@ const docTemplate = `{
         "payment.SubmitedPaymentResponse": {
             "type": "object",
             "properties": {
-                "order_id": {
+                "order_number": {
                     "type": "integer"
                 },
                 "payment_date": {
@@ -596,9 +637,6 @@ const docTemplate = `{
                 "amount": {
                     "type": "integer"
                 },
-                "orgId": {
-                    "type": "integer"
-                },
                 "userId": {
                     "type": "integer"
                 }
@@ -608,6 +646,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "point.TotalPoint": {
+            "type": "object",
+            "properties": {
+                "point": {
                     "type": "integer"
                 }
             }
