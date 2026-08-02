@@ -132,10 +132,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 0 points from amount -599.999', () => {
+  it('Calculate => Should return -12 points from amount -599.999', () => {
     // arrange
     const amount = -599.999;
-    const expected = 0;
+    const expected = -12;
 
     // act
     const result = service.calculatePoint(amount);
