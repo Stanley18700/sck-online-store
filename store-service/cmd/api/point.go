@@ -115,6 +115,59 @@ func (api PointAPI) CalculatePointHandler(context *gin.Context) {
 	context.JSON(http.StatusOK, res)
 }
 
+// @Summary Calculate a discount from reward points
+// @Description Calculate the THB discount for burning points (2 points = 1.00 THB, delegated to point-service)
+// @Tags point
+// @Accept json
+// @Produce json
+// @Param points query int true "Points the customer wants to burn (or their balance for a preview)"
+// @Param subtotal query number true "Order subtotal in THB (the discount cap)"
+// @Success 200 {object} point.DiscountQuote
+// @Failure 400 {string} string "Bad request error"
+// @Failure 500
+// @Router /api/v1/point/discount [get]
+func (api PointAPI) DiscountHandler(context *gin.Context) {
+	ctx := context.Request.Context()
+
+	points, err := strconv.Atoi(context.Query("points"))
+	if err != nil {
+		slog.ErrorContext(ctx, "Point discount bad request",
+			"log_type", "error",
+			"error_code", "INVALID_REQUEST",
+			"error_message", err.Error(),
+		)
+		context.String(http.StatusBadRequest, "points must be a number")
+		return
+	}
+
+	subtotal, err := strconv.ParseFloat(context.Query("subtotal"), 64)
+	if err != nil {
+		slog.ErrorContext(ctx, "Point discount bad request",
+			"log_type", "error",
+			"error_code", "INVALID_REQUEST",
+			"error_message", err.Error(),
+		)
+		context.String(http.StatusBadRequest, "subtotal must be a number")
+		return
+	}
+
+	res, err := api.PointService.CalculateDiscount(ctx, points, subtotal)
+	if err != nil {
+		slog.ErrorContext(ctx, "PointService.CalculateDiscount failed",
+			"log_type", "error",
+			"error_code", "POINT_DISCOUNT_FAILED",
+			"error_message", err.Error(),
+			slog.Any("request", map[string]any{"points": points, "subtotal": subtotal}),
+		)
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	context.JSON(http.StatusOK, res)
+}
+
 // @Summary Get total points
 // @Description Get user's total point balance
 // @Tags point

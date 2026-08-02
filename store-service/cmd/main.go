@@ -253,6 +253,7 @@ func main() {
 	protected.GET("/point", pointAPI.TotalPointHandler)
 	protected.POST("/point", pointAPI.DeductPointHandler)
 	protected.GET("/point/calculate", pointAPI.CalculatePointHandler)
+	protected.GET("/point/discount", pointAPI.DiscountHandler)
 
 	//docs.SwaggerInfo.BasePath = "/api/v1"
 	route.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

@@ -13,3 +13,8 @@ type Point struct {
 type TotalPoint struct {
 	Point int `json:"point"`
 }
+
+type DiscountQuote struct {
+	BurnPoint int     `json:"burn_point"`
+	Discount  float64 `json:"discount"`
+}

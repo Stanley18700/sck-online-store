@@ -11,6 +11,7 @@ type PointInterface interface {
 	DeductPoint(ctx context.Context, uid int, submitedPoint SubmitedPoint) (TotalPoint, error)
 	CheckBurnPoint(ctx context.Context, uid int, amount int) (bool, error)
 	CalculatePoint(ctx context.Context, amount float64) (TotalPoint, error)
+	CalculateDiscount(ctx context.Context, points int, subtotal float64) (DiscountQuote, error)
 }
 
 type PointService struct {
@@ -21,6 +22,7 @@ type PointGatewayInterface interface {
 	GetPoints(ctx context.Context, uid int) ([]Point, error)
 	CreatePoint(ctx context.Context, uid int, body Point) (Point, error)
 	CalculatePoint(ctx context.Context, amount float64) (int, error)
+	CalculateDiscount(ctx context.Context, points int, subtotal float64) (DiscountQuote, error)
 }
 
 func (pointService PointService) TotalPoint(ctx context.Context, uid int) (TotalPoint, error) {
@@ -70,6 +72,17 @@ func (pointService PointService) CalculatePoint(ctx context.Context, amount floa
 	return TotalPoint{
 		Point: receivedPoint,
 	}, nil
+}
+
+func (pointService PointService) CalculateDiscount(ctx context.Context, points int, subtotal float64) (DiscountQuote, error) {
+	quote, err := pointService.PointGateway.CalculateDiscount(ctx, points, subtotal)
+	if err != nil {
+		slog.ErrorContext(ctx, "PointGateway.CalculateDiscount failed",
+			"log_type", "error", "error_code", "POINT_GATEWAY_FAILED", "error_message", err.Error(),
+			"points", points, "subtotal", subtotal)
+		return DiscountQuote{}, err
+	}
+	return quote, nil
 }
 
 func (pointService PointService) CheckBurnPoint(ctx context.Context, uid int, amount int) (bool, error) {
