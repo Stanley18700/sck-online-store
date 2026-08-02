@@ -113,6 +113,7 @@ run_robot:
 	&& pip install -r requirements.txt \
 	&& robot -v URL:$(URL) -v REMOTE_HUB_URL:$(REMOTE_HUB_URL) -x ./reports/authen.xml ./001-Authentication \
 	&& robot -v URL:$(URL) -v REMOTE_HUB_URL:$(REMOTE_HUB_URL) -x ./reports/pdf.xml ./002-Order-Summary-PDF \
+	&& robot -v URL:$(URL) -v REMOTE_HUB_URL:$(REMOTE_HUB_URL) -x ./reports/point_discount.xml ./004-Point-Discount \
 	&& deactivate
 
 run_robot_authentication: URL ?= http://localhost/product/list
@@ -133,6 +134,15 @@ run_robot_order_summary_pdf:
 	&& robot -v URL:$(URL) -v REMOTE_HUB_URL:${REMOTE_HUB_URL} -x ./reports/pdf.xml ./002-Order-Summary-PDF \
 	&& deactivate
 
+run_robot_point_discount: URL ?= http://localhost/product/list
+run_robot_point_discount:
+	cd atdd/ui \
+	&& python3 -m venv .venv \
+	&& . .venv/bin/activate \
+	&& pip install -r requirements.txt \
+	&& robot -v URL:$(URL) -v REMOTE_HUB_URL:${REMOTE_HUB_URL} -x ./reports/point_discount.xml ./004-Point-Discount \
+	&& deactivate
+
 # run_newman: 
 # 	cd atdd/api \
 # 	&& newman run sck-online-store.postman_collection.json \
@@ -143,6 +153,7 @@ run_newman:
 	$(MAKE) run_newman_authentication
 	$(MAKE) run_newman_order_summary_pdf
 	$(MAKE) run_newman_point_calculate
+	$(MAKE) run_newman_point_discount
 
 run_newman_authentication:
 	cd atdd/api \
@@ -201,6 +212,24 @@ run_newman_point_calculate:
 	  --folder "TSA-PC-001" \
 		-e sck-online-store.local.postman_environment.json \
 		-d data/003-Point-Calculate/TSA-PC-001.json \
+		-r cli,junit,htmlextra
+
+run_newman_point_discount:
+	cd atdd/api \
+	&& newman run collections/004-Point-Discount.postman_collection.json \
+	  --folder "TSS-PD-001" \
+		-e sck-online-store.local.postman_environment.json \
+		-d data/004-Point-Discount/TSS-PD-001.json \
+		-r cli,junit,htmlextra \
+	&& newman run collections/004-Point-Discount.postman_collection.json \
+	  --folder "TSA-PD-001" \
+		-e sck-online-store.local.postman_environment.json \
+		-d data/004-Point-Discount/TSA-PD-001.json \
+		-r cli,junit,htmlextra \
+	&& newman run collections/004-Point-Discount.postman_collection.json \
+	  --folder "TSS-PD-002" \
+		-e sck-online-store.local.postman_environment.json \
+		-d data/004-Point-Discount/TSS-PD-002.json \
 		-r cli,junit,htmlextra
 
 code-coverage:

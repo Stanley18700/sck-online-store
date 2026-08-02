@@ -1,0 +1,58 @@
+[
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": 2,
+    "subtotal": 500,
+    "expected_burn_point": 2,
+    "expected_discount": 1
+  },
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": 1,
+    "subtotal": 500,
+    "expected_burn_point": 0,
+    "expected_discount": 0
+  },
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": 160,
+    "subtotal": 500,
+    "expected_burn_point": 160,
+    "expected_discount": 80
+  },
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": 3,
+    "subtotal": 500,
+    "expected_burn_point": 2,
+    "expected_discount": 1
+  },
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": 173,
+    "subtotal": 500,
+    "expected_burn_point": 172,
+    "expected_discount": 86
+  },
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": 200,
+    "subtotal": 50.25,
+    "expected_burn_point": 100,
+    "expected_discount": 50
+  },
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": 0,
+    "subtotal": 500,
+    "expected_burn_point": 0,
+    "expected_discount": 0
+  }
+]

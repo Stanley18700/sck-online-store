@@ -1,0 +1,25 @@
+[
+  {
+    "username": "user_6",
+    "password": "P@ssw0rd",
+    "product_id": 1,
+    "mint_points": 160,
+    "burn_points": 160,
+    "expected_discount": 80,
+    "subtotal_price": 4314.6,
+    "total_price": 4284.6,
+    "receiving_point": 84,
+    "address": "43/8 หมู่บ้านเปี่ยมสุข ถนนลาดพร้าว ซอย 63",
+    "sub_district": "สะพานสอง",
+    "district": "วังทองหลาง",
+    "province": "กรุงเทพมหานคร",
+    "zipcode": "10310",
+    "first_name": "ณัฐพล",
+    "last_name": "ศรีสมบัติ",
+    "phone_number": "0891234567",
+    "otp": 123456,
+    "ref_otp": "AXYZ",
+    "shipping_method_prefix": "KR",
+    "order_number": null
+  }
+]

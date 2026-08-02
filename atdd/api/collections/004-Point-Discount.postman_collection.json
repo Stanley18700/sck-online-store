@@ -1,0 +1,588 @@
+{
+	"info": {
+		"_postman_id": "7c1de414-52aa-4b8e-9f10-8e2a51c40b22",
+		"name": "004-Point-Discount",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TSS-PD-001",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Response message should be 'Logged in successfully.'\", function () {",
+									"    pm.expect(jsonData.message).to.eql(\"Logged in successfully.\");",
+									"});",
+									"",
+									"pm.variables.set(\"access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/login",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calculate Discount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const expectedBurnPoint = parseInt(pm.variables.get(\"expected_burn_point\"));",
+									"const expectedDiscount = parseFloat(pm.variables.get(\"expected_discount\"));",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const schema = {",
+									"    \"burn_point\": {",
+									"        \"type\": \"integer\"",
+									"    },",
+									"    \"discount\": {",
+									"        \"type\": \"number\"",
+									"    }",
+									"};",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test('Response body schema is valid', function () {",
+									"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+									"});",
+									"",
+									"pm.test(`Burn point should be ${expectedBurnPoint}`, function () {",
+									"    pm.expect(jsonData.burn_point).to.eql(expectedBurnPoint);",
+									"});",
+									"",
+									"pm.test(`Discount should be ${expectedDiscount} THB`, function () {",
+									"    pm.expect(jsonData.discount).to.eql(expectedDiscount);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/point/discount?points={{points}}&subtotal={{subtotal}}",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"point",
+								"discount"
+							],
+							"query": [
+								{
+									"key": "points",
+									"value": "{{points}}"
+								},
+								{
+									"key": "subtotal",
+									"value": "{{subtotal}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TSA-PD-001",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json()",
+									"",
+									"pm.variables.set(\"access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/login",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calculate Discount with invalid input",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const expectedMessage = pm.variables.get(\"expected_message\");",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(`Error message should be '${expectedMessage}'`, function () {",
+									"    pm.expect(pm.response.text()).to.eql(expectedMessage);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/point/discount?points={{points}}&subtotal={{subtotal}}",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"point",
+								"discount"
+							],
+							"query": [
+								{
+									"key": "points",
+									"value": "{{points}}"
+								},
+								{
+									"key": "subtotal",
+									"value": "{{subtotal}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TSS-PD-002",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json()",
+									"",
+									"pm.variables.set(\"access_token\", jsonData.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/login",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Arrange - Mint Points",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const mintPoints = parseInt(pm.variables.get(\"mint_points\"));",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(`Balance should be ${mintPoints} after minting (ledger was clean)`, function () {",
+									"    pm.expect(jsonData.point).to.eql(mintPoints);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": {{mint_points}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/point",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"point"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add to Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"product_id\": {{product_id}},\n  \"quantity\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/addCart",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"addCart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Order with Burn Points",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Order number should exist\", function () {",
+									"    pm.expect(jsonData.order_number).to.be.a('number');",
+									"});",
+									"",
+									"pm.variables.set(\"order_number\", jsonData.order_number);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cart\": [\n    {\n      \"product_id\": {{product_id}},\n      \"quantity\": 1\n    }\n  ],\n  \"shipping_method_id\": 1,\n  \"shipping_address\": \"{{address}}\",\n  \"shipping_sub_district\": \"{{sub_district}}\",\n  \"shipping_district\": \"{{district}}\",\n  \"shipping_province\": \"{{province}}\",\n  \"shipping_zip_code\": \"{{zipcode}}\",\n  \"recipient_first_name\": \"{{first_name}}\",\n  \"recipient_last_name\": \"{{last_name}}\",\n  \"recipient_phone_number\": \"{{phone_number}}\",\n  \"payment_method_id\": 1,\n  \"burn_point\": {{burn_points}},\n  \"sub_total_price\": {{subtotal_price}},\n  \"discount_price\": 0,\n  \"total_price\": {{total_price}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/order",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const shippingPrefix = pm.variables.get(\"shipping_method_prefix\");",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(`Tracking number should start with ${shippingPrefix}`, function () {",
+									"    pm.expect(jsonData.tracking_number).to.match(new RegExp('^' + shippingPrefix + '-'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order_number\": {{order_number}},\n  \"otp\": {{otp}},\n  \"ref_otp\": \"{{ref_otp}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/confirmPayment",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"confirmPayment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Order Summary shows the Discount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const burnPoints = parseInt(pm.variables.get(\"burn_points\"));",
+									"const expectedDiscount = parseFloat(pm.variables.get(\"expected_discount\"));",
+									"const subtotalPrice = parseFloat(pm.variables.get(\"subtotal_price\"));",
+									"const totalPrice = parseFloat(pm.variables.get(\"total_price\"));",
+									"const receivingPoint = parseInt(pm.variables.get(\"receiving_point\"));",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(`Sub total price should be ${subtotalPrice}`, function () {",
+									"    pm.expect(jsonData.sub_total_price).to.eql(subtotalPrice);",
+									"});",
+									"",
+									"pm.test(`Discount price should be ${expectedDiscount}`, function () {",
+									"    pm.expect(jsonData.discount_price).to.eql(expectedDiscount);",
+									"});",
+									"",
+									"pm.test(`Burn point should be ${burnPoints}`, function () {",
+									"    pm.expect(jsonData.burn_point).to.eql(burnPoints);",
+									"});",
+									"",
+									"pm.test(`Total price should be ${totalPrice}`, function () {",
+									"    pm.expect(jsonData.total_price).to.eql(totalPrice);",
+									"});",
+									"",
+									"pm.test(`Receiving point should be ${receivingPoint} (earned on the discounted amount)`, function () {",
+									"    pm.expect(jsonData.receiving_point).to.eql(receivingPoint);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/order/{{order_number}}/summary",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"order",
+								"{{order_number}}",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Balance is zero again (self-cleaning)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Balance should be 0 after burning exactly what was minted\", function () {",
+									"    pm.expect(jsonData.point).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{STORE_SERVICE_URL}}/api/v1/point",
+							"host": [
+								"{{STORE_SERVICE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"point"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	}
+}
