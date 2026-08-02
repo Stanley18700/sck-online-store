@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "user_id": 2,
     "username": "user_2",
@@ -21,13 +21,13 @@
     "sub_total_order_price": 4044.71,
     "total_order_price": 4094.71,
     "shipping_method_id": 2,
-    "address": "59/6 หมู่บ้านวรารมย์ ซอยสุรนารายณ์ 2",
-    "sub_district": "ในเมือง",
-    "district": "เมืองนครราชสีมา",
-    "province": "นครราชสีมา",
+    "address": "59/6 à¸«à¸¡à¸¹à¹ˆà¸šà¹‰à¸²à¸™à¸§à¸£à¸²à¸£à¸¡à¸¢à¹Œ à¸‹à¸­à¸¢à¸ªà¸¸à¸£à¸™à¸²à¸£à¸²à¸¢à¸“à¹Œ 2",
+    "sub_district": "à¹ƒà¸™à¹€à¸¡à¸·à¸­à¸‡",
+    "district": "à¹€à¸¡à¸·à¸­à¸‡à¸™à¸„à¸£à¸£à¸²à¸Šà¸ªà¸µà¸¡à¸²",
+    "province": "à¸™à¸„à¸£à¸£à¸²à¸Šà¸ªà¸µà¸¡à¸²",
     "zipcode": "30000",
-    "first_name": "จักรกฤษณ์",
-    "last_name": "แสงทอง",
+    "first_name": "à¸ˆà¸±à¸à¸£à¸à¸¤à¸©à¸“à¹Œ",
+    "last_name": "à¹à¸ªà¸‡à¸—à¸­à¸‡",
     "phone_number": "0891234567",
     "payment_method_id": 1,
     "credit_card_name": "Jakkrit Saengthong",

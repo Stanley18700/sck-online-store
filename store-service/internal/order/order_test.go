@@ -1,4 +1,4 @@
-package order_test
+﻿package order_test
 
 import (
 	"context"
@@ -37,13 +37,13 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_OrderNumber_26010695220010
 			},
 		},
 		ShippingMethodID:     1,
-		ShippingAddress:      "405/37 ถ.มหิดล",
-		ShippingSubDistrict:  "ท่าศาลา",
-		ShippingDistrict:     "เมือง",
-		ShippingProvince:     "เชียงใหม่",
+		ShippingAddress:      "405/37 à¸–.à¸¡à¸«à¸´à¸”à¸¥",
+		ShippingSubDistrict:  "à¸—à¹ˆà¸²à¸¨à¸²à¸¥à¸²",
+		ShippingDistrict:     "à¹€à¸¡à¸·à¸­à¸‡",
+		ShippingProvince:     "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
 		ShippingZipCode:      "50000",
-		RecipientFirstName:   "ณัฐญา",
-		RecipientLastName:    "ชุติบุตร",
+		RecipientFirstName:   "à¸“à¸±à¸à¸à¸²",
+		RecipientLastName:    "à¸Šà¸¸à¸•à¸´à¸šà¸¸à¸•à¸£",
 		RecipientPhoneNumber: "0970809292",
 		PaymentMethodID:      1,
 		BurnPoint:            0,
@@ -54,7 +54,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_OrderNumber_26010695220010
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, submittedOrder.BurnPoint).Return(true, nil)
-	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 9}, nil)
 
 	mockProductRepository := new(mockProductRepository)
 	mockProductRepository.On("GetProductByID", mock.Anything, submittedOrder.Cart[0].ProductID).Return(product.ProductDetail{
@@ -91,20 +91,20 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_OrderNumber_26010695220010
 		TotalPrice:       515.8110340000001,
 		ShippingFee:      50,
 		BurnPoint:        0,
-		EarnPoint:        4,
+		EarnPoint:        9,
 	}
 
 	mockOrderRepository.On("CreateOrder", mock.Anything, uid, orderDetail).Return(oid, nil)
 
 	shippingInfo := order.ShippingInfo{
 		ShippingMethodID:     1,
-		ShippingAddress:      "405/37 ถ.มหิดล",
-		ShippingSubDistrict:  "ท่าศาลา",
-		ShippingDistrict:     "เมือง",
-		ShippingProvince:     "เชียงใหม่",
+		ShippingAddress:      "405/37 à¸–.à¸¡à¸«à¸´à¸”à¸¥",
+		ShippingSubDistrict:  "à¸—à¹ˆà¸²à¸¨à¸²à¸¥à¸²",
+		ShippingDistrict:     "à¹€à¸¡à¸·à¸­à¸‡",
+		ShippingProvince:     "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
 		ShippingZipCode:      "50000",
-		RecipientFirstName:   "ณัฐญา",
-		RecipientLastName:    "ชุติบุตร",
+		RecipientFirstName:   "à¸“à¸±à¸à¸à¸²",
+		RecipientLastName:    "à¸Šà¸¸à¸•à¸´à¸šà¸¸à¸•à¸£",
 		RecipientPhoneNumber: "0970809292",
 	}
 	mockOrderRepository.On("CreateShipping", mock.Anything, uid, oid, shippingInfo).Return(1, nil)
@@ -148,13 +148,13 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Error_Points_not_En
 			},
 		},
 		ShippingMethodID:     1,
-		ShippingAddress:      "405/37 ถ.มหิดล",
-		ShippingSubDistrict:  "ท่าศาลา",
-		ShippingDistrict:     "เมือง",
-		ShippingProvince:     "เชียงใหม่",
+		ShippingAddress:      "405/37 à¸–.à¸¡à¸«à¸´à¸”à¸¥",
+		ShippingSubDistrict:  "à¸—à¹ˆà¸²à¸¨à¸²à¸¥à¸²",
+		ShippingDistrict:     "à¹€à¸¡à¸·à¸­à¸‡",
+		ShippingProvince:     "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
 		ShippingZipCode:      "50000",
-		RecipientFirstName:   "ณัฐญา",
-		RecipientLastName:    "ชุติบุตร",
+		RecipientFirstName:   "à¸“à¸±à¸à¸à¸²",
+		RecipientLastName:    "à¸Šà¸¸à¸•à¸´à¸šà¸¸à¸•à¸£",
 		RecipientPhoneNumber: "0970809292",
 		PaymentMethodID:      1,
 		BurnPoint:            burnPoint,
@@ -182,13 +182,13 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_No_Product_in_Order
 	submittedOrder := order.SubmitedOrder{
 		Cart:                 []order.OrderProduct{},
 		ShippingMethodID:     1,
-		ShippingAddress:      "405/37 ถ.มหิดล",
-		ShippingSubDistrict:  "ท่าศาลา",
-		ShippingDistrict:     "เมือง",
-		ShippingProvince:     "เชียงใหม่",
+		ShippingAddress:      "405/37 à¸–.à¸¡à¸«à¸´à¸”à¸¥",
+		ShippingSubDistrict:  "à¸—à¹ˆà¸²à¸¨à¸²à¸¥à¸²",
+		ShippingDistrict:     "à¹€à¸¡à¸·à¸­à¸‡",
+		ShippingProvince:     "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
 		ShippingZipCode:      "50000",
-		RecipientFirstName:   "ณัฐญา",
-		RecipientLastName:    "ชุติบุตร",
+		RecipientFirstName:   "à¸“à¸±à¸à¸à¸²",
+		RecipientLastName:    "à¸Šà¸¸à¸•à¸´à¸šà¸¸à¸•à¸£",
 		RecipientPhoneNumber: "0970809292",
 		PaymentMethodID:      1,
 		BurnPoint:            0,
@@ -199,7 +199,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_No_Product_in_Order
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, 0).Return(true, nil)
-	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 9}, nil)
 
 	orderService := order.OrderService{
 		PointService: mockPointInterface,
@@ -230,13 +230,13 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Order_Error(
 			},
 		},
 		ShippingMethodID:     1,
-		ShippingAddress:      "405/37 ถ.มหิดล",
-		ShippingSubDistrict:  "ท่าศาลา",
-		ShippingDistrict:     "เมือง",
-		ShippingProvince:     "เชียงใหม่",
+		ShippingAddress:      "405/37 à¸–.à¸¡à¸«à¸´à¸”à¸¥",
+		ShippingSubDistrict:  "à¸—à¹ˆà¸²à¸¨à¸²à¸¥à¸²",
+		ShippingDistrict:     "à¹€à¸¡à¸·à¸­à¸‡",
+		ShippingProvince:     "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
 		ShippingZipCode:      "50000",
-		RecipientFirstName:   "ณัฐญา",
-		RecipientLastName:    "ชุติบุตร",
+		RecipientFirstName:   "à¸“à¸±à¸à¸à¸²",
+		RecipientLastName:    "à¸Šà¸¸à¸•à¸´à¸šà¸¸à¸•à¸£",
 		RecipientPhoneNumber: "0970809292",
 		PaymentMethodID:      1,
 		BurnPoint:            0,
@@ -247,7 +247,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Order_Error(
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, 0).Return(true, nil)
-	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 9}, nil)
 
 	mockProductRepository := new(mockProductRepository)
 	mockProductRepository.On("GetProductByID", mock.Anything, submittedOrder.Cart[0].ProductID).Return(product.ProductDetail{
@@ -284,7 +284,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Order_Error(
 		TotalPrice:       515.8110340000001,
 		ShippingFee:      50,
 		BurnPoint:        0,
-		EarnPoint:        4,
+		EarnPoint:        9,
 	}
 	mockOrderRepository.On("CreateOrder", mock.Anything, uid, orderDetail).Return(oid, errors.New("CreateOrder Error"))
 
@@ -322,13 +322,13 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Shipping_Err
 			},
 		},
 		ShippingMethodID:     1,
-		ShippingAddress:      "405/37 ถ.มหิดล",
-		ShippingSubDistrict:  "ท่าศาลา",
-		ShippingDistrict:     "เมือง",
-		ShippingProvince:     "เชียงใหม่",
+		ShippingAddress:      "405/37 à¸–.à¸¡à¸«à¸´à¸”à¸¥",
+		ShippingSubDistrict:  "à¸—à¹ˆà¸²à¸¨à¸²à¸¥à¸²",
+		ShippingDistrict:     "à¹€à¸¡à¸·à¸­à¸‡",
+		ShippingProvince:     "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
 		ShippingZipCode:      "50000",
-		RecipientFirstName:   "ณัฐญา",
-		RecipientLastName:    "ชุติบุตร",
+		RecipientFirstName:   "à¸“à¸±à¸à¸à¸²",
+		RecipientLastName:    "à¸Šà¸¸à¸•à¸´à¸šà¸¸à¸•à¸£",
 		RecipientPhoneNumber: "0970809292",
 		PaymentMethodID:      1,
 		BurnPoint:            0,
@@ -339,7 +339,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Shipping_Err
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, 0).Return(true, nil)
-	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 9}, nil)
 
 	mockProductRepository := new(mockProductRepository)
 	mockProductRepository.On("GetProductByID", mock.Anything, submittedOrder.Cart[0].ProductID).Return(product.ProductDetail{
@@ -376,20 +376,20 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Shipping_Err
 		TotalPrice:       515.8110340000001,
 		ShippingFee:      50,
 		BurnPoint:        0,
-		EarnPoint:        4,
+		EarnPoint:        9,
 	}
 
 	mockOrderRepository.On("CreateOrder", mock.Anything, uid, orderDetail).Return(oid, nil)
 
 	shippingInfo := order.ShippingInfo{
 		ShippingMethodID:     1,
-		ShippingAddress:      "405/37 ถ.มหิดล",
-		ShippingSubDistrict:  "ท่าศาลา",
-		ShippingDistrict:     "เมือง",
-		ShippingProvince:     "เชียงใหม่",
+		ShippingAddress:      "405/37 à¸–.à¸¡à¸«à¸´à¸”à¸¥",
+		ShippingSubDistrict:  "à¸—à¹ˆà¸²à¸¨à¸²à¸¥à¸²",
+		ShippingDistrict:     "à¹€à¸¡à¸·à¸­à¸‡",
+		ShippingProvince:     "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
 		ShippingZipCode:      "50000",
-		RecipientFirstName:   "ณัฐญา",
-		RecipientLastName:    "ชุติบุตร",
+		RecipientFirstName:   "à¸“à¸±à¸à¸à¸²",
+		RecipientLastName:    "à¸Šà¸¸à¸•à¸´à¸šà¸¸à¸•à¸£",
 		RecipientPhoneNumber: "0970809292",
 	}
 	mockOrderRepository.On("CreateShipping", mock.Anything, uid, oid, shippingInfo).Return(1, errors.New("CreateShipping Error"))
@@ -428,13 +428,13 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Order_Produc
 			},
 		},
 		ShippingMethodID:     1,
-		ShippingAddress:      "405/37 ถ.มหิดล",
-		ShippingSubDistrict:  "ท่าศาลา",
-		ShippingDistrict:     "เมือง",
-		ShippingProvince:     "เชียงใหม่",
+		ShippingAddress:      "405/37 à¸–.à¸¡à¸«à¸´à¸”à¸¥",
+		ShippingSubDistrict:  "à¸—à¹ˆà¸²à¸¨à¸²à¸¥à¸²",
+		ShippingDistrict:     "à¹€à¸¡à¸·à¸­à¸‡",
+		ShippingProvince:     "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
 		ShippingZipCode:      "50000",
-		RecipientFirstName:   "ณัฐญา",
-		RecipientLastName:    "ชุติบุตร",
+		RecipientFirstName:   "à¸“à¸±à¸à¸à¸²",
+		RecipientLastName:    "à¸Šà¸¸à¸•à¸´à¸šà¸¸à¸•à¸£",
 		RecipientPhoneNumber: "0970809292",
 		PaymentMethodID:      1,
 		BurnPoint:            0,
@@ -445,7 +445,7 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Order_Produc
 
 	mockPointInterface := new(mockPointInterface)
 	mockPointInterface.On("CheckBurnPoint", mock.Anything, uid, submittedOrder.BurnPoint).Return(true, nil)
-	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 4}, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 465.811034).Return(point.TotalPoint{Point: 9}, nil)
 
 	mockProductRepository := new(mockProductRepository)
 	mockProductRepository.On("GetProductByID", mock.Anything, submittedOrder.Cart[0].ProductID).Return(product.ProductDetail{
@@ -482,20 +482,20 @@ func Test_CreateOrder_Input_Submitted_Order_Should_be_Return_Create_Order_Produc
 		TotalPrice:       515.8110340000001,
 		ShippingFee:      50,
 		BurnPoint:        0,
-		EarnPoint:        4,
+		EarnPoint:        9,
 	}
 
 	mockOrderRepository.On("CreateOrder", mock.Anything, uid, orderDetail).Return(oid, nil)
 
 	shippingInfo := order.ShippingInfo{
 		ShippingMethodID:     1,
-		ShippingAddress:      "405/37 ถ.มหิดล",
-		ShippingSubDistrict:  "ท่าศาลา",
-		ShippingDistrict:     "เมือง",
-		ShippingProvince:     "เชียงใหม่",
+		ShippingAddress:      "405/37 à¸–.à¸¡à¸«à¸´à¸”à¸¥",
+		ShippingSubDistrict:  "à¸—à¹ˆà¸²à¸¨à¸²à¸¥à¸²",
+		ShippingDistrict:     "à¹€à¸¡à¸·à¸­à¸‡",
+		ShippingProvince:     "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
 		ShippingZipCode:      "50000",
-		RecipientFirstName:   "ณัฐญา",
-		RecipientLastName:    "ชุติบุตร",
+		RecipientFirstName:   "à¸“à¸±à¸à¸à¸²",
+		RecipientLastName:    "à¸Šà¸¸à¸•à¸´à¸šà¸¸à¸•à¸£",
 		RecipientPhoneNumber: "0970809292",
 	}
 	mockOrderRepository.On("CreateShipping", mock.Anything, uid, oid, shippingInfo).Return(1, nil)
@@ -584,7 +584,7 @@ func Test_GetOrderSummary_Should_Return_One_Product_If_OrderNumber_is_2601069522
 		TotalPrice:       4364.6,
 		ShippingFee:      50,
 		BurnPoint:        0,
-		EarnPoint:        43,
+		EarnPoint:        86,
 		TransactionID:    "TXN202512250934",
 		Status:           "paid",
 		TrackingNumber:   trackingNumber,
@@ -668,7 +668,7 @@ func Test_GetOrderSummary_Should_Return_Two_Products_If_OrderOrderNumber_is_2601
 		TotalPrice:       5256.22,
 		ShippingFee:      50,
 		BurnPoint:        0,
-		EarnPoint:        52,
+		EarnPoint:        104,
 		TransactionID:    "TXN202512251028",
 		Status:           "paid",
 		TrackingNumber:   trackingNumber,

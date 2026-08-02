@@ -2614,7 +2614,7 @@
               "script": {
                 "exec": [
                   "pm.variables.set(\"quantity\", 2)",
-                  "pm.variables.set(\"receive_point\", 86)",
+                  "pm.variables.set(\"receive_point\", 172)",
                   "pm.variables.set(\"total_price\", 239.9)",
                   "pm.variables.set(\"total_price_thb\", 8629.19)",
                   "pm.variables.set(\"total_price_full_thb\", 8629.194364)",

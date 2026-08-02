@@ -18,7 +18,7 @@ export class PointService {
   ) {}
 
   calculatePoint(amount: number): number {
-    const point = amount < 0 ? 0 : Math.floor(amount / POINT_RATE);
+    const point = Math.floor(amount / POINT_RATE);
     this.logger.log(`Point calculated: amount=${amount}, point=${point}`);
     otelLogger.emit({
       severityNumber: SeverityNumber.INFO,

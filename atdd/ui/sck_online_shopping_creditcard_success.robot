@@ -11,7 +11,7 @@ ${BROWSER}    headlesschrome
     ค้นหาสินค้าด้วย คำค้นหา    Bicycle
     ตรวจสอบผลการค้นหา    product-card-name-1    Balance Training Bicycle
     เลือกดูสินค้า    product-card-name-1
-    ตรวจสอบจำนวนแต้มต่อชิ้นที่จะได้รับของ     product-detail-point    43 Points
+    ตรวจสอบจำนวนแต้มต่อชิ้นที่จะได้รับของ     product-detail-point    86 Points
     เพิ่มสินค้าลงตะกร้า    Balance Training Bicycle
     ตรวจสอบจำนวนแต้มต่อชิ้นที่จะได้รับของสินค้าในตะกร้า    product-1-point
     ใส่ที่อยู่จัดส่งสินค้า    
@@ -59,7 +59,7 @@ ${BROWSER}    headlesschrome
     [Arguments]    ${product-point-locator}
     Click Button    id:header-menu-cart-btn
     Wait Until Element Is Visible    id:${product-point-locator}
-    # Element Text Should Be    id:product-1-point    43 Points
+    # Element Text Should Be    id:product-1-point    86 Points
 
 ใส่ที่อยู่จัดส่งสินค้า
     [Arguments]    ${firstname}    ${lastname}    

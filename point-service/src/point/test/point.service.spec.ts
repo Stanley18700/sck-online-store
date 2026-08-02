@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+﻿import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreatePointDto } from '../point.dto';
 import { Point } from '../point.entity';
@@ -60,10 +60,10 @@ describe('PointService', () => {
     expect(result).toEqual(createPointResponse);
   });
 
-  it('Calculate => Should return 10 points from amount 1000', () => {
+  it('Calculate => Should return 20 points from amount 1000', () => {
     // arrange
     const amount = 1000;
-    const expected = 10;
+    const expected = 20;
 
     // act
     const result = service.calculatePoint(amount);
@@ -72,10 +72,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 10 points from amount 1060', () => {
+  it('Calculate => Should return 21 points from amount 1060', () => {
     // arrange
     const amount = 1060;
-    const expected = 10;
+    const expected = 21;
 
     // act
     const result = service.calculatePoint(amount);
@@ -84,10 +84,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 0 points from amount 60', () => {
+  it('Calculate => Should return 1 point from amount 60', () => {
     // arrange
     const amount = 60;
-    const expected = 0;
+    const expected = 1;
 
     // act
     const result = service.calculatePoint(amount);
@@ -108,10 +108,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 1 point from amount 100', () => {
+  it('Calculate => Should return 2 points from amount 100', () => {
     // arrange
     const amount = 100;
-    const expected = 1;
+    const expected = 2;
 
     // act
     const result = service.calculatePoint(amount);
@@ -120,10 +120,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 5 points from amount 599.999', () => {
+  it('Calculate => Should return 11 points from amount 599.999', () => {
     // arrange
     const amount = 599.999;
-    const expected = 5;
+    const expected = 11;
 
     // act
     const result = service.calculatePoint(amount);
@@ -132,10 +132,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 0 points from amount -599.999', () => {
+  it('Calculate => Should return -12 points from amount -599.999', () => {
     // arrange
     const amount = -599.999;
-    const expected = 0;
+    const expected = -12;
 
     // act
     const result = service.calculatePoint(amount);

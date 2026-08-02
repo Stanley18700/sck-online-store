@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "user_id": 3,
     "username": "user_3",
@@ -21,13 +21,13 @@
     "sub_total_order_price": 4044.71,
     "total_order_price": 4094.71,
     "shipping_method_id": 1,
-    "address": "45 ถนนนิมมานเหมินทร์ ซอย 11",
-    "sub_district": "สุเทพ",
-    "district": "เมืองเชียงใหม่",
-    "province": "เชียงใหม่",
+    "address": "45 à¸–à¸™à¸™à¸™à¸´à¸¡à¸¡à¸²à¸™à¹€à¸«à¸¡à¸´à¸™à¸—à¸£à¹Œ à¸‹à¸­à¸¢ 11",
+    "sub_district": "à¸ªà¸¸à¹€à¸—à¸ž",
+    "district": "à¹€à¸¡à¸·à¸­à¸‡à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
+    "province": "à¹€à¸Šà¸µà¸¢à¸‡à¹ƒà¸«à¸¡à¹ˆ",
     "zipcode": "50200",
-    "first_name": "พิมพ์ชนก",
-    "last_name": "แตชะวงศ์",
+    "first_name": "à¸žà¸´à¸¡à¸žà¹Œà¸Šà¸™à¸",
+    "last_name": "à¹à¸•à¸Šà¸°à¸§à¸‡à¸¨à¹Œ",
     "phone_number": "0891234567",
     "payment_method_id": 1,
     "credit_card_name": "Pimchanok Techawong",

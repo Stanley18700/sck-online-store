@@ -19,15 +19,15 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
     เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่    /auth/login    login-page
     เข้าสู่ระบบ    login-username-input    user_3    login-password-input    P@ssw0rd
     เลือกดูสินค้า    product-card-name-1    Balance Training Bicycle
-    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    43
+    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    86
     เพิ่มสินค้าลงตะกร้าและมีสินค้าจำนวน    1
     กลับไปที่หน้า homepage
     เลือกดูสินค้า    product-card-name-2    43 Piece dinner Set
     เพิ่มสินค้าลงตะกร้าและมีสินค้าจำนวน    2
     เพิ่มสินค้าลงตะกร้าและมีสินค้าจำนวน    2
     
-    ${product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=43    price=4,314.60    qty=1
-    ${product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=9    price=931.62      qty=2
+    ${product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=86    price=4,314.60    qty=1
+    ${product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=18    price=931.62      qty=2
     ${product-list}=    Create List    ${product1}    ${product2}
 
     ตรวจสอบข้อมูลรายการสินค้าในตะกร้า และ Checkout    ${product-list}    5,246.22
@@ -44,12 +44,12 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
     ตรวจสอบหมายเลขพัสดุว่าต้องขึ้นต้นด้วย    KR
     กดดาวน์โหลดไฟล์
 
-    ${order-product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=43    price=4,314.60    qty=1    total=4,314.60
-    ${order-product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=4    price=465.81      qty=2    total=931.62
+    ${order-product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=86    price=4,314.60    qty=1    total=4,314.60
+    ${order-product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=9    price=465.81      qty=2    total=931.62
     ${order-product-list}=    Create List    ${order-product1}    ${order-product2}
     ตรวขสอบข้อมูลในไฟล์ PDF    Michael    James    KR    credit
     ...    ${order-product-list}
-    ...    5,246.22    thai_post    5,296.22    52
+    ...    5,246.22    thai_post    5,296.22    104
 
 *** Keywords ***
 Setup Folder For Download
