@@ -37,6 +37,11 @@ func (service *mockPointInterface) CalculatePoint(ctx context.Context, amount fl
 	return argument.Get(0).(point.TotalPoint), argument.Error(1)
 }
 
+func (service *mockPointInterface) CalculateDiscount(ctx context.Context, points int, subtotal float64) (point.DiscountQuote, error) {
+	argument := service.Called(ctx, points, subtotal)
+	return argument.Get(0).(point.DiscountQuote), argument.Error(1)
+}
+
 type mockOrderHelper struct {
 	mock.Mock
 }

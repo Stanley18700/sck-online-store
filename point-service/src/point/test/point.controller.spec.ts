@@ -11,6 +11,7 @@ describe('PointController', () => {
     getPoint: jest.fn(),
     deductPoint: jest.fn(),
     calculatePoint: jest.fn(),
+    calculateDiscount: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -106,6 +107,61 @@ describe('PointController', () => {
       act();
     } catch (error) {
       expect(error.getStatus()).toEqual(HttpStatus.BAD_REQUEST);
+    }
+  });
+
+  it('Discount => should return discount calculated by the service from given points and subtotal', () => {
+    // arrange
+    const points = '160';
+    const subtotal = '500';
+    const expected = { burn_point: 160, discount: 80 };
+
+    jest
+      .spyOn(mockPointService, 'calculateDiscount')
+      .mockReturnValue(expected);
+
+    // act
+    const result = controller.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(mockPointService.calculateDiscount).toBeCalled();
+    expect(mockPointService.calculateDiscount).toBeCalledWith(160, 500);
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => should throw BAD_REQUEST when points is not a number', () => {
+    // arrange
+    const points = 'abc';
+    const subtotal = '500';
+
+    // act
+    const act = () => controller.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(act).toThrow(HttpException);
+    try {
+      act();
+    } catch (error) {
+      expect(error.getStatus()).toEqual(HttpStatus.BAD_REQUEST);
+      expect(error.message).toEqual('points must be a number');
+    }
+  });
+
+  it('Discount => should throw BAD_REQUEST when subtotal is missing', () => {
+    // arrange
+    const points = '160';
+    const subtotal = undefined;
+
+    // act
+    const act = () => controller.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(act).toThrow(HttpException);
+    try {
+      act();
+    } catch (error) {
+      expect(error.getStatus()).toEqual(HttpStatus.BAD_REQUEST);
+      expect(error.message).toEqual('subtotal must be a number');
     }
   });
 

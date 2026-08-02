@@ -4,30 +4,50 @@ Test Teardown    Close All Browsers
 
 *** Variables ***
 ${URL}    http://localhost/product/list
+${API_URL}    http://localhost
 ${BROWSER}    headlesschrome
 ${REMOTE_HUB_URL}
+${USERNAME}    user_7
+${PASSWORD}    P@ssw0rd
+${MINT_POINTS}    160
 
 *** Test Cases ***
-ทดสอบ เข้าสู่ระบบครั้งแรกเพื่อสั่งซื้อสินค้า Balance Training Bicycle จัดส่งด้วย Kerry ชำระเงินด้วยบัตรเครดิต Visa สำเร็จ และตรวจสอบการได้แต้มสะสม
+ทดสอบ ใช้แต้มสะสม 160 แต้มเป็นส่วนลด 80.00 บาท สั่งซื้อสินค้า Balance Training Bicycle จัดส่งด้วย Kerry ชำระเงินด้วยบัตรเครดิต Visa สำเร็จ
+    เตรียมแต้มสะสมให้ผู้ใช้ผ่าน API    ${USERNAME}    ${PASSWORD}    ${MINT_POINTS}
     เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่    /auth/login    login-page
-    เข้าสู่ระบบ    login-username-input    user_5    login-password-input    P@ssw0rd
+    เข้าสู่ระบบ    login-username-input    ${USERNAME}    login-password-input    ${PASSWORD}
     เลือกดูสินค้า    product-card-name-1    Balance Training Bicycle
-    ตรวจสอบรายละเอียดสินค้า    Balance Training Bicycle    SportsFun    4,314.60    86
     เพิ่มสินค้าลงตะกร้า
-    ตรวจสอบข้อมูลสินค้าในตะกร้า และ Checkout    Balance Training Bicycle    SportsFun    4,314.60    86    4,314.60
-    ใส่ที่อยู่จัดส่งสินค้า    
-    ...    ณัฐพล    ศรีสมบัติ    
+    ไปที่หน้า Checkout
+    ใส่ที่อยู่จัดส่งสินค้า
+    ...    ณัฐพล    ศรีสมบัติ
     ...    43/8 หมู่บ้านเปี่ยมสุข ถนนลาดพร้าว ซอย 63    กรุงเทพมหานคร
     ...    เขตวังทองหลาง    วังทองหลาง
     ...    10310    0891234567
     เลือกวิธีจัดส่งสินค้าเป็น    kerry
-    ตรวจสอบค่าจัดส่งสินค้าของ Kerry เท่ากันกับ 50.00 บาท    kerry    50.00
+    ตรวจสอบแต้มสะสมที่แสดงในหน้า Checkout    160
+    เลือกใช้แต้มสะสมเป็นส่วนลด และตรวจสอบส่วนลด    80.00
     เลือกช่องทางการชำระเงินแบบ VISA Credit Card    Nattapon Srisombat    5123 4500 0000 0008    01/39    100
-    ตรวจสอบราคารวมที่ต้องชำระเงิน ต้องเท่ากันกับ    4,364.60
+    ตรวจสอบราคารวมที่ต้องชำระเงิน ต้องเท่ากันกับ    4,284.60
     ยืนยัน OTP
     ตรวจสอบหมายเลขพัสดุว่าต้องขึ้นต้นด้วย    KR
+    ตรวจสอบแต้มคงเหลือผ่าน API ต้องเท่ากับ    0
 
 *** Keywords ***
+เตรียมแต้มสะสมให้ผู้ใช้ผ่าน API
+    [Arguments]    ${username}    ${password}    ${amount}
+    ${login}=    Evaluate    __import__('requests').post('${API_URL}/api/v1/login', json={'username': '${username}', 'password': '${password}'}, timeout=15).json()
+    ${token}=    Set Variable    ${login}[access_token]
+    ${resp}=    Evaluate    __import__('requests').post('${API_URL}/api/v1/point', json={'amount': ${amount}}, headers={'Authorization': 'Bearer ${token}'}, timeout=15).json()
+    Should Be Equal As Integers    ${resp}[point]    ${amount}
+
+ตรวจสอบแต้มคงเหลือผ่าน API ต้องเท่ากับ
+    [Arguments]    ${expected-balance}
+    ${login}=    Evaluate    __import__('requests').post('${API_URL}/api/v1/login', json={'username': '${USERNAME}', 'password': '${PASSWORD}'}, timeout=15).json()
+    ${token}=    Set Variable    ${login}[access_token]
+    ${resp}=    Evaluate    __import__('requests').get('${API_URL}/api/v1/point', headers={'Authorization': 'Bearer ${token}'}, timeout=15).json()
+    Should Be Equal As Integers    ${resp}[point]    ${expected-balance}
+
 เข้าสู่เว็บไซต์ และตรวจสอบว่า redirect มาที่
     [Arguments]    ${target-url}    ${target-element-locator}
     Open Browser    url=${URL}    browser=${BROWSER}    remote_url=${REMOTE_HUB_URL}
@@ -50,30 +70,18 @@ ${REMOTE_HUB_URL}
     Element Should Contain    id:${card-name-locator}    ${expected-product-name}
     Click Element    id:${card-name-locator}
 
-ตรวจสอบรายละเอียดสินค้า
-    [Arguments]    ${product-name}    ${product-brand}    ${product-thb-price}    ${product-point}
-    Wait Until Element Is Visible    id:product-detail-product-name
-    Element Text Should Be    id:product-detail-product-name    ${product-name}
-    Element Text Should Be    id:product-detail-brand    ${product-brand}
-    Element Text Should Be    id:product-detail-price-thb    ฿${product-thb-price}
-    Element Text Should Be    id:product-detail-point    ${product-point} Points
-
 เพิ่มสินค้าลงตะกร้า
+    Wait Until Element Is Visible    id:product-detail-add-to-cart-btn
     Click Button    id:product-detail-add-to-cart-btn
     Wait Until Element Contains    id:header-menu-cart-badge    text=1
 
-ตรวจสอบข้อมูลสินค้าในตะกร้า และ Checkout
-    [Arguments]    ${product-name}    ${product-brand}    ${product-thb-price}    ${product-point}    ${subtotal-price}
+ไปที่หน้า Checkout
     Click Button    id:header-menu-cart-btn
-    Wait Until Element Is Visible    id:product-1-price
-    Element Text Should Be    id:product-1-name    ${product-name}
-    Element Text Should Be    id:product-1-price    ฿${product-thb-price}
-    Element Text Should Be    id:product-1-point    ${product-point} Points
-    Element Text Should Be    id:shopping-cart-subtotal-price    ฿${subtotal-price}
+    Wait Until Element Is Visible    id:shopping-cart-checkout-btn
     Click Element    id:shopping-cart-checkout-btn
 
 ใส่ที่อยู่จัดส่งสินค้า
-    [Arguments]    ${firstname}    ${lastname}    
+    [Arguments]    ${firstname}    ${lastname}
     ...    ${address}    ${province}    ${district}
     ...    ${subdistrict}    ${zipcode}    ${phone-number}
     Input Text    id:shipping-form-first-name-input    ${firstname}
@@ -82,7 +90,7 @@ ${REMOTE_HUB_URL}
     Select From List By Label    id:shipping-form-province-select    ${province}
     Select From List By Label    id:shipping-form-district-select    ${district}
     Select From List By Label    id:shipping-form-sub-district-select    ${subdistrict}
-    Element Attribute Value Should Be    id:shipping-form-zipcode-input    value    ${zipcode} 
+    Element Attribute Value Should Be    id:shipping-form-zipcode-input    value    ${zipcode}
     Input Text    id:shipping-form-mobile-input    ${phone-number}
 
 เลือกวิธีจัดส่งสินค้าเป็น
@@ -93,16 +101,20 @@ ${REMOTE_HUB_URL}
     ...    lineman=id:shipping-method-3-card
     Click Element    ${DELIVERY_METHOD}[${method}]
 
-ตรวจสอบค่าจัดส่งสินค้าของ Kerry เท่ากันกับ 50.00 บาท
-    [Arguments]    ${method}    ${fee}
-    &{DELIVERY_METHOD}    Create Dictionary
-    ...    kerry=id:shipping-method-1-fee
-    ...    thai_post=id:shipping-method-2-fee
-    ...    lineman=id:shipping-method-3-fee
-    Element Text Should Be    ${DELIVERY_METHOD}[${method}]    ฿${fee}
+ตรวจสอบแต้มสะสมที่แสดงในหน้า Checkout
+    [Arguments]    ${expected-points}
+    Wait Until Element Is Visible    id:discount-use-point-total
+    Element Text Should Be    id:discount-use-point-total    ${expected-points} Points
+
+เลือกใช้แต้มสะสมเป็นส่วนลด และตรวจสอบส่วนลด
+    [Arguments]    ${expected-discount}
+    Click Element    id:discount-use-point-input
+    Wait Until Element Is Visible    id:order-summary-point-discount-price
+    Wait Until Element Contains    id:order-summary-point-discount-price    ${expected-discount}
+    Element Text Should Be    id:order-summary-point-discount-price    -฿${expected-discount}
 
 เลือกช่องทางการชำระเงินแบบ VISA Credit Card
-    [Arguments]    ${credit-card-name}    ${credit-card-number}    ${credit-card-expired-date}       ${credit-card-cvv}
+    [Arguments]    ${credit-card-name}    ${credit-card-number}    ${credit-card-expired-date}    ${credit-card-cvv}
     Click Element    id:payment-credit-input
     Input Text    id:payment-credit-form-fullname-input    ${credit-card-name}
     Input Text    id:payment-credit-form-card-number-input    ${credit-card-number}
@@ -127,4 +139,3 @@ ${REMOTE_HUB_URL}
     Element Should Contain    id:order-success-tracking-id    ${shipping-prefix}-
     ${tracking-id}=    Get Text    id:order-success-tracking-id
     Should Match Regexp    ${tracking-id}    ^${shipping-prefix}-\\d{7,9}$
-

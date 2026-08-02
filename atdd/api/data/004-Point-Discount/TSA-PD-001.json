@@ -1,0 +1,30 @@
+[
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": "abc",
+    "subtotal": "500",
+    "expected_message": "points must be a number"
+  },
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": "",
+    "subtotal": "500",
+    "expected_message": "points must be a number"
+  },
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": "160",
+    "subtotal": "abc",
+    "expected_message": "subtotal must be a number"
+  },
+  {
+    "username": "user_1",
+    "password": "P@ssw0rd",
+    "points": "160",
+    "subtotal": "",
+    "expected_message": "subtotal must be a number"
+  }
+]

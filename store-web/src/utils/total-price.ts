@@ -15,32 +15,22 @@ export const subTotal = (priceList: SubTotalType[]): number => {
   return total
 }
 
-export const pointBurn = (point: number, subTotal: number) => {
-  let pointsUsed = 0
-
-  if (point <= subTotal) {
-    pointsUsed = point
-  } else {
-    // ปัดเศษขึ้น
-    pointsUsed = Math.ceil(subTotal)
-  }
-
-  return pointsUsed
-}
-
+// The discount amount is quoted by point-service (2 points = 1.00 THB,
+// capped at the subtotal) - this function only composes the final total.
+// Shipping is never discounted.
 export const totalPayment = (
   isUsePoint: boolean,
-  pointsUsed: number,
+  discount: number,
   subTotal: number,
   shippingFee: number
 ) => {
   let totalPayment = 0
 
   if (isUsePoint) {
-    if (subTotal <= pointsUsed) {
+    if (subTotal <= discount) {
       totalPayment = shippingFee
     } else {
-      totalPayment = subTotal - pointsUsed + shippingFee
+      totalPayment = subTotal - discount + shippingFee
     }
   } else {
     totalPayment = subTotal + shippingFee

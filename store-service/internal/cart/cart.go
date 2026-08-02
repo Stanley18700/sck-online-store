@@ -30,11 +30,6 @@ func (cartService CartService) GetCart(ctx context.Context, uid int) (CartResult
 	for i := range carts {
 		c := &carts[i]
 		digit := common.ConvertToThb(c.Price)
-		if c.ProductID == 8 {
-			digit.ShortDecimal += 0.01
-			digit.LongDecimal += 0.01
-		}
-
 		c.PriceTHB = digit.ShortDecimal
 		c.PriceFullTHB = digit.LongDecimal
 		totalPrice = totalPrice + (c.Price * float64(c.Quantity))

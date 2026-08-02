@@ -25,3 +25,8 @@ func (gateway *mockPointGateway) CalculatePoint(ctx context.Context, amount floa
 	argument := gateway.Called(ctx, amount)
 	return argument.Int(0), argument.Error(1)
 }
+
+func (gateway *mockPointGateway) CalculateDiscount(ctx context.Context, points int, subtotal float64) (point.DiscountQuote, error) {
+	argument := gateway.Called(ctx, points, subtotal)
+	return argument.Get(0).(point.DiscountQuote), argument.Error(1)
+}

@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+﻿import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreatePointDto } from '../point.dto';
 import { Point } from '../point.entity';
@@ -60,10 +60,10 @@ describe('PointService', () => {
     expect(result).toEqual(createPointResponse);
   });
 
-  it('Calculate => Should return 10 points from amount 1000', () => {
+  it('Calculate => Should return 20 points from amount 1000', () => {
     // arrange
     const amount = 1000;
-    const expected = 10;
+    const expected = 20;
 
     // act
     const result = service.calculatePoint(amount);
@@ -72,10 +72,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 10 points from amount 1060', () => {
+  it('Calculate => Should return 21 points from amount 1060', () => {
     // arrange
     const amount = 1060;
-    const expected = 10;
+    const expected = 21;
 
     // act
     const result = service.calculatePoint(amount);
@@ -84,10 +84,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 0 points from amount 60', () => {
+  it('Calculate => Should return 1 point from amount 60', () => {
     // arrange
     const amount = 60;
-    const expected = 0;
+    const expected = 1;
 
     // act
     const result = service.calculatePoint(amount);
@@ -108,10 +108,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 1 point from amount 100', () => {
+  it('Calculate => Should return 2 points from amount 100', () => {
     // arrange
     const amount = 100;
-    const expected = 1;
+    const expected = 2;
 
     // act
     const result = service.calculatePoint(amount);
@@ -120,10 +120,10 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
-  it('Calculate => Should return 5 points from amount 599.999', () => {
+  it('Calculate => Should return 11 points from amount 599.999', () => {
     // arrange
     const amount = 599.999;
-    const expected = 5;
+    const expected = 11;
 
     // act
     const result = service.calculatePoint(amount);
@@ -139,6 +139,97 @@ describe('PointService', () => {
 
     // act
     const result = service.calculatePoint(amount);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should return 1.00 THB from 2 points on subtotal 500 (equal to the unit)', () => {
+    // arrange
+    const points = 2;
+    const subtotal = 500;
+    const expected = { burn_point: 2, discount: 1 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should return 0.00 THB from 1 point (less than the unit, single point stays)', () => {
+    // arrange
+    const points = 1;
+    const subtotal = 500;
+    const expected = { burn_point: 0, discount: 0 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should return 80.00 THB from 160 points on subtotal 500 (more than the unit)', () => {
+    // arrange
+    const points = 160;
+    const subtotal = 500;
+    const expected = { burn_point: 160, discount: 80 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should burn 2 of 3 points for 1.00 THB (odd point remains)', () => {
+    // arrange
+    const points = 3;
+    const subtotal = 500;
+    const expected = { burn_point: 2, discount: 1 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should cap the discount at the subtotal (200 points on subtotal 50.25 burns 100)', () => {
+    // arrange
+    const points = 200;
+    const subtotal = 50.25;
+    const expected = { burn_point: 100, discount: 50 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should return 0 from 0 points', () => {
+    // arrange
+    const points = 0;
+    const subtotal = 500;
+    const expected = { burn_point: 0, discount: 0 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should return 0 from negative points', () => {
+    // arrange
+    const points = -10;
+    const subtotal = 500;
+    const expected = { burn_point: 0, discount: 0 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
 
     // assert
     expect(result).toEqual(expected);

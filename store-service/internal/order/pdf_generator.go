@@ -116,6 +116,9 @@ func (orderSummaryPDF OrderSummaryPDFGenerator) GenerateOrderSummaryPDF(orderSum
 	// --- TOTALS ---
 	rowTextBold := props.Text{Family: fontfamily.Helvetica, Style: fontstyle.Bold, Size: 10, Align: align.Left, Top: 2, Left: 2}
 	addTotalRow(page, "Merchandise Subtotal (THB)", formatter.Sprintf("%.2f", orderSummary.SubTotalPrice), rowTextBold)
+	if orderSummary.DiscountPrice > 0 {
+		addTotalRow(page, "Points Discount (THB)", formatter.Sprintf("-%.2f", orderSummary.DiscountPrice), rowTextBold)
+	}
 	addTotalRow(page, "Shipping Fee (THB)", formatter.Sprintf("%.2f", orderSummary.ShippingFee), rowTextBold)
 	addTotalRow(page, "Total Price (THB)", formatter.Sprintf("%.2f", orderSummary.TotalPrice), rowTextBold)
 

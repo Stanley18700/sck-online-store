@@ -84,7 +84,22 @@ func (orderService OrderService) CreateOrder(ctx context.Context, uid int, submi
 	}
 
 	subtotalPriceTHB := common.ConvertToThb(subtotalPrice).LongDecimal
-	discountPriceTHB := common.ConvertToThb(submitedOrder.DiscountPrice).LongDecimal
+
+	// The discount is derived server-side from burn_point via point-service
+	// (2 points = 1.00 THB). The client-supplied discount_price is never trusted.
+	discountPriceTHB := 0.0
+	if submitedOrder.BurnPoint > 0 {
+		quote, err := orderService.PointService.CalculateDiscount(ctx, submitedOrder.BurnPoint, subtotalPriceTHB)
+		if err != nil {
+			slog.ErrorContext(ctx, "PointService.CalculateDiscount failed",
+				"log_type", "error", "error_code", "POINT_DISCOUNT_FAILED", "error_message", err.Error(), "user_id", uid)
+			return Order{}, err
+		}
+		if quote.BurnPoint != submitedOrder.BurnPoint {
+			return Order{}, fmt.Errorf("invalid burn point: points burn in pairs and the discount cannot exceed the subtotal")
+		}
+		discountPriceTHB = quote.Discount
+	}
 	totalPriceTHB := subtotalPriceTHB - discountPriceTHB
 
 	shippingDetail, _ := orderService.ShippingRepository.GetShippingMethodByID(ctx, submitedOrder.ShippingMethodID)
@@ -126,10 +141,33 @@ func (orderService OrderService) CreateOrder(ctx context.Context, uid int, submi
 		EarnPoint:        earnPoint.Point,
 	}
 
+	// Burn BEFORE the order is written: a failed deduction must fail the order,
+	// otherwise the discount would be granted while the points stay untouched.
+	if submitedOrder.BurnPoint > 0 {
+		if _, err := orderService.OrderBurnPoint(ctx, uid, submitedOrder.BurnPoint); err != nil {
+			slog.ErrorContext(ctx, "OrderBurnPoint failed",
+				"log_type", "error", "error_code", "POINT_BURN_FAILED", "error_message", err.Error(),
+				"user_id", uid, "burn_point", submitedOrder.BurnPoint)
+			return Order{}, err
+		}
+	}
+	// If persisting the order fails after the burn, credit the points back (best effort).
+	refundBurnedPoints := func() {
+		if submitedOrder.BurnPoint <= 0 {
+			return
+		}
+		if _, err := orderService.PointService.DeductPoint(ctx, uid, point.SubmitedPoint{Amount: submitedOrder.BurnPoint}); err != nil {
+			slog.ErrorContext(ctx, "Compensating point refund failed",
+				"log_type", "error", "error_code", "POINT_REFUND_FAILED", "error_message", err.Error(),
+				"user_id", uid, "burn_point", submitedOrder.BurnPoint)
+		}
+	}
+
 	orderID, err := orderService.OrderRepository.CreateOrder(ctx, uid, orderDetail)
 	if err != nil {
 		slog.ErrorContext(ctx, "OrderRepository.CreateOrder failed",
 			"log_type", "error", "error_code", "ORDER_INSERT_FAILED", "error_message", err.Error(), "user_id", uid)
+		refundBurnedPoints()
 		return Order{}, err
 	}
 
@@ -148,6 +186,7 @@ func (orderService OrderService) CreateOrder(ctx context.Context, uid int, submi
 	if err != nil {
 		slog.ErrorContext(ctx, "OrderRepository.CreateShipping failed",
 			"log_type", "error", "error_code", "SHIPPING_INSERT_FAILED", "error_message", err.Error(), "user_id", uid)
+		refundBurnedPoints()
 		return Order{}, err
 	}
 
@@ -158,14 +197,11 @@ func (orderService OrderService) CreateOrder(ctx context.Context, uid int, submi
 			slog.ErrorContext(ctx, "OrderRepository.CreateOrderProduct failed",
 				"log_type", "error", "error_code", "ORDER_PRODUCT_FAILED", "error_message", err.Error(), "user_id", uid,
 				"product_id", selectedProduct.ProductID)
+			refundBurnedPoints()
 			return Order{}, err
 		}
 
 		orderService.CartRepository.DeleteCart(ctx, uid, selectedProduct.ProductID)
-	}
-
-	if submitedOrder.BurnPoint > 0 {
-		orderService.OrderBurnPoint(ctx, uid, submitedOrder.BurnPoint)
 	}
 
 	if metrics.OrdersCreated != nil {
@@ -275,6 +311,7 @@ func (orderService OrderService) GetOrderSummary(ctx context.Context, orderNumbe
 	subTotal := math.Round(orderDetail.SubTotalPrice*factor2) / factor2
 	totalPrice := math.Round(orderDetail.TotalPrice*factor2) / factor2
 	shippingFee := math.Round(orderDetail.ShippingFee*factor2) / factor2
+	discountPrice := math.Round(orderDetail.DiscountPrice*factor2) / factor2
 
 	bangkok, err := time.LoadLocation("Asia/Bangkok")
 	if err != nil {
@@ -294,8 +331,10 @@ func (orderService OrderService) GetOrderSummary(ctx context.Context, orderNumbe
 		PaymentMethod:    paymentMethod,
 		OrderProductList: productList,
 		SubTotalPrice:    subTotal,
+		DiscountPrice:    discountPrice,
 		TotalPrice:       totalPrice,
 		ShippingFee:      shippingFee,
+		BurnPoint:        orderDetail.BurnPoint,
 		ReceivingPoint:   orderDetail.EarnPoint,
 		IssuedDate:       issuedDate,
 	}
