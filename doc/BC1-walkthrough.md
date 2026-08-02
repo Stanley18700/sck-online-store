@@ -120,43 +120,55 @@ But one number was hardcoded inside the collection itself:
 
 ---
 
-## 4. The instructor's hidden bugs (the traps) 🪤
+## 4. The instructor's hidden bugs (the traps) 🪤 — found, fixed, then RESTORED
 
 The instructor planted 3 bugs on purpose. One commit message even says it directly:
 *"[Added] bug for product id 3 that show minus sign(-) for price and point"* (commit `ddfdf90`).
 
+> **Important:** after we fixed them, the instructor told us the rule — these bugs are
+> **markers**, not defects. They must stay in the code so the instructor can easily see what
+> we changed. So we put all three back with `git revert`. **The traps are LIVE again.**
+> The git history keeps the whole trail on purpose: *found → fixed → rule learned →
+> restored*. That trail is our evidence that we detected them.
+
 ### Trap 1: Product 3 shows a minus price and 0 points
 
-The website code **flipped the price to negative** after receiving it from the API
-(only on the detail page). The negative price then went to the calculator, and the
-calculator correctly answers 0 for negative amounts. So "0 Points" was not the real bug —
-it was a *symptom*.
+The website code **flips the price to negative** after receiving it from the API
+(only on the detail page). The negative price then goes to the calculator, and the
+calculator correctly answers 0 for negative amounts. So "0 Points" is not the real bug —
+it is a *symptom*.
 
-**How we caught it:** the product **list** page showed the correct price (+฿897.45).
-Only the **detail** page showed minus. Same product, two different prices → the bug must be
-in the detail page code. **Fix: commit `6abf049`.**
+**How we caught it:** the product **list** page shows the correct price (+฿897.45).
+Only the **detail** page shows minus. Same product, two different prices → the bug must be
+in the detail page code.
+**Trail:** fixed in `6abf049` → restored in `3a45d19`. Live at
+[product-detail.ts — line 27](../store-web/src/services/product-detail.ts#L27).
 
 ### Trap 2: Product 7's page always shows an error
 
-Hidden code: `if ID == 7 → return error`. But you could still **buy** product 7,
+Hidden code: `if ID == 7 → return error`. But you can still **buy** product 7,
 because ordering uses a different code path.
 **How we caught it:** a product you can buy but cannot look at is very strange.
-**Fix: commit `85bc2ef`.**
+**Trail:** fixed in `85bc2ef` → restored in `c528ab7`. Live at
+[product.go — line 37](../store-service/internal/product/product.go#L37).
 
 ### Trap 3: Product 8's price in the cart never matches the total
 
-Hidden code added **+0.01** to the displayed price only. Line shows ฿717.61,
+Hidden code adds **+0.01** to the displayed price only. Line shows ฿717.61,
 total shows ฿717.60. Made to break exact-value test assertions.
-**Fix: commit `6ea56f9`.**
+**Trail:** fixed in `6ea56f9` → restored in `84f697b`. Live at
+[cart.go — line 33](../store-service/internal/cart/cart.go#L33).
 
-To see any fix: `git show <commit>` in the terminal.
+To see any commit: `git show <commit>` in the terminal.
 
-Also good to know (we did **not** change these — they are valid test data):
+Also good to know (we never changed these — they are valid test data):
 - 2 products with price 0 (ids 1044, 1339)
 - 8 products at 1.39/2.78 USD that sit exactly on the 50-baht point boundary
+- None of our test suites uses product 3, 7, or 8 — so restoring the traps breaks no test.
 
-> สรุป: อาจารย์ซ่อนบั๊กไว้ 3 ตัว — สินค้า 3 ราคาติดลบ (เว็บกลับเครื่องหมายเอง),
-> สินค้า 7 เปิดหน้าไม่ได้แต่ซื้อได้, สินค้า 8 ราคาในตะกร้าไม่ตรงกับยอดรวม แก้หมดแล้ว
+> สรุป: อาจารย์ซ่อนบั๊กไว้ 3 ตัวเพื่อเป็น "เครื่องหมาย" ไม่ใช่ให้แก้ — เราเจอครบ แก้ไปแล้ว
+> แต่พอทราบกติกาก็ revert คืนทั้งหมด ตอนนี้บั๊กกลับมาทำงานเหมือนเดิม และ git history
+> เก็บหลักฐานไว้ครบว่าเราเจออะไรบ้าง
 
 ---
 
