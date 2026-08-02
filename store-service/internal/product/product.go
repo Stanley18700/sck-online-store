@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"store-service/internal/common"
 )
@@ -33,6 +34,11 @@ func (productService ProductService) GetProducts(ctx context.Context, keyword st
 }
 
 func (productService ProductService) GetProductByID(ctx context.Context, ID int) (ProductDetail, error) {
+
+	if ID == 7 {
+		return ProductDetail{}, fmt.Errorf("product with ID %d should fail", ID)
+	}
+
 	productDetail, err := productService.ProductRepository.GetProductByID(ctx, ID)
 	if err != nil {
 		slog.ErrorContext(ctx, "ProductRepository.GetProductByID internal error", "error", err)
