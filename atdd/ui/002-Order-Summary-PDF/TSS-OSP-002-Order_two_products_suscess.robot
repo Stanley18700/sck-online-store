@@ -27,7 +27,7 @@ ${DOWNLOAD_DIR}    ${CURDIR}${/}..${/}temp_downloads
     เพิ่มสินค้าลงตะกร้าและมีสินค้าจำนวน    2
     
     ${product1}=    Create Dictionary    id=1    brand=SportsFun    name=Balance Training Bicycle    points=80    price=4,044.71    qty=1
-    ${product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=17    price=873.34      qty=2
+    ${product2}=    Create Dictionary    id=2    brand=CoolKidz     name=43 Piece dinner Set       points=17    price=873.35      qty=2
     ${product-list}=    Create List    ${product1}    ${product2}
 
     ตรวจสอบข้อมูลรายการสินค้าในตะกร้า และ Checkout    ${product-list}    4,918.06

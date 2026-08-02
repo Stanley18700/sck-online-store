@@ -22,6 +22,7 @@ const ProductItem = ({
   quantity,
   product_name,
   product_price_thb,
+  product_price_full_thb,
   product_image,
   stock,
   isHiddenLable = false
@@ -107,11 +108,13 @@ const ProductItem = ({
 
   useEffect(() => {
     const fetchReceivePoint = async () => {
-      const result = await calculatePointService(product_price_thb * quantity)
+      const result = await calculatePointService(
+        product_price_full_thb * quantity
+      )
       setReceivePoint(result.data ? result.data.point : 0)
     }
     fetchReceivePoint()
-  }, [product_price_thb, quantity])
+  }, [product_price_full_thb, quantity])
 
   return (
     <li className="flex py-6">
@@ -134,7 +137,7 @@ const ProductItem = ({
             </h3>
             <div className="flex flex-col items-end">
               <p id={`product-${product_id}-price`} className="ml-4">
-                {convertCurrency(product_price_thb * quantity, 'THB')}
+                {convertCurrency(product_price_full_thb * quantity, 'THB')}
               </p>
               {receivePoint !== null && (
                 <p
