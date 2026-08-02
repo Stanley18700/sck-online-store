@@ -2,6 +2,7 @@ import SHIPPING_METHOD from '@/assets/data/shipping_method.json'
 import GetProductInCartService, {
   ProductDetailInCart
 } from '@/services/cart/get-product-list'
+import getDiscountQuoteService from '@/services/discount'
 import * as priceCalculate from '@/utils/total-price'
 import type {} from '@redux-devtools/extension' // required for devtools typing
 import { produce } from 'immer'
@@ -44,6 +45,7 @@ type PointType = {
   point: number // Current Point
   isUsePoint: boolean
   burnPoint: number
+  discountThb: number // Server-quoted discount for burnPoint (2 points = 1.00 THB)
 }
 
 type PaymentType = {
@@ -114,7 +116,8 @@ const useOrderStore = create<OrderStoreType>()(
     point: {
       point: 0,
       burnPoint: 0,
-      isUsePoint: false
+      isUsePoint: false,
+      discountThb: 0
     },
     payment: {
       paymentMethod: 1,
@@ -158,6 +161,7 @@ const useOrderStore = create<OrderStoreType>()(
         produce((state) => {
           state.point.burnPoint = 0
           state.point.isUsePoint = false
+          state.point.discountThb = 0
         })
       )
 
@@ -170,10 +174,30 @@ const useOrderStore = create<OrderStoreType>()(
         })
       )
     },
-    setIsUsePoint: (isUsePoint: boolean) => {
+    setIsUsePoint: async (isUsePoint: boolean) => {
+      if (!isUsePoint) {
+        set(
+          produce((state) => {
+            state.point.isUsePoint = false
+            state.point.burnPoint = 0
+            state.point.discountThb = 0
+          })
+        )
+
+        get().updateSummary()
+        return
+      }
+
+      // The burn and discount amounts come from point-service - never computed here
+      const balance = get().point.point
+      const subTotal = get().summary.total_price_thb
+      const result = await getDiscountQuoteService(balance, subTotal)
+
       set(
         produce((state) => {
-          state.point.isUsePoint = isUsePoint
+          state.point.isUsePoint = true
+          state.point.burnPoint = result.data ? result.data.burn_point : 0
+          state.point.discountThb = result.data ? result.data.discount : 0
         })
       )
 
@@ -217,20 +241,15 @@ const useOrderStore = create<OrderStoreType>()(
     },
     updateSummary: async () => {
       const isUsePoint = get().point.isUsePoint
-      const point = get().point.point
+      const discountThb = get().point.discountThb
 
       const subTotal = get().summary.total_price_thb
       const shippingFee = get().shipping.shippingFee
 
-      // priceCalculate Point
-      const pointsUsed = isUsePoint
-        ? priceCalculate.pointBurn(point, subTotal)
-        : 0
-
-      // Total Payment
+      // Total Payment (the discount itself was quoted by point-service)
       const totalPayment = priceCalculate.totalPayment(
         isUsePoint,
-        pointsUsed,
+        discountThb,
         subTotal,
         shippingFee
       )
@@ -242,7 +261,6 @@ const useOrderStore = create<OrderStoreType>()(
         produce((state) => {
           state.totalPayment = totalPayment
           state.receivePoint = receivePoint
-          state.point.burnPoint = pointsUsed
         })
       )
     }

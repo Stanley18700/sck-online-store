@@ -12,7 +12,7 @@ export type GetPointServiceResponse = {
 
 const getPointService = async (): Promise<GetPointServiceResponse> => {
   try {
-    const { data } = await axiosShoppingMallApi.put(`/api/v1/point`)
+    const { data } = await axiosShoppingMallApi.get(`/api/v1/point`)
     return {
       data: data
     }

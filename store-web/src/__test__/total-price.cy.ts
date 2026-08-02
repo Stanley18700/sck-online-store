@@ -1,4 +1,4 @@
-import { pointBurn, subTotal, totalPayment } from '@/utils/total-price'
+import { subTotal, totalPayment } from '@/utils/total-price'
 
 describe('Utils > total price > Sub Total', () => {
   it('ต้องการเห็น ผลรวมสินค้า 620 บาท จากรายการสินค้าทั้งหมด', () => {
@@ -18,90 +18,71 @@ describe('Utils > total price > Sub Total', () => {
     ]
     const actual = 620
 
-    const pointUsed = subTotal(priceList)
+    const total = subTotal(priceList)
 
-    expect(pointUsed).to.equal(actual)
+    expect(total).to.equal(actual)
   })
 })
 
+// ส่วนลดคำนวณโดย point-service (2 แต้ม = 1.00 บาท) — ฟังก์ชันนี้แค่รวมยอด
 describe('Utils > total price > Total Price', () => {
   it('ต้องการเห็น เงินทั้งหมด 550 บาท จากราคารวมสินค้าทั้งหมด 500 บาท และค่าขนส่ง 50 บาท โดยไม่ใช้ส่วนลดจากแต้ม', () => {
     const isUsePoint = false
-    const pointsUsed = 0
+    const discount = 0
     const subTotal = 500
     const shippingFee = 50
     const actual = 550
 
-    const total = totalPayment(isUsePoint, pointsUsed, subTotal, shippingFee)
+    const total = totalPayment(isUsePoint, discount, subTotal, shippingFee)
 
     expect(total).to.equal(actual)
   })
 
-  it('ต้องการเห็น เงินทั้งหมด 450 บาท จากราคารวมสินค้าทั้งหมด 500 บาท และค่าขนส่ง 50 บาท โดยใช้ส่วนลดจากแต้ม 100 แต้ม', () => {
+  it('ต้องการเห็น เงินทั้งหมด 500 บาท จากราคารวมสินค้าทั้งหมด 500 บาท และค่าขนส่ง 50 บาท โดยใช้ 100 แต้ม (ส่วนลด 50 บาท)', () => {
     const isUsePoint = true
-    const pointsUsed = 100
+    const discount = 50 // 100 points = 50.00 THB
     const subTotal = 500
     const shippingFee = 50
-    const actual = 450
+    const actual = 500
 
-    const total = totalPayment(isUsePoint, pointsUsed, subTotal, shippingFee)
+    const total = totalPayment(isUsePoint, discount, subTotal, shippingFee)
 
     expect(total).to.equal(actual)
   })
 
-  it('ต้องการเห็น เงินทั้งหมด 50 บาท จากราคารวมสินค้าทั้งหมด 100 บาท และค่าขนส่ง 50 บาท โดยใช้ส่วนลดจากแต้ม 100 แต้ม', () => {
+  it('ต้องการเห็น เงินทั้งหมด 100 บาท จากราคารวมสินค้าทั้งหมด 100 บาท และค่าขนส่ง 50 บาท โดยใช้ 100 แต้ม (ส่วนลด 50 บาท)', () => {
     const isUsePoint = true
-    const pointsUsed = 100
+    const discount = 50 // 100 points = 50.00 THB
+    const subTotal = 100
+    const shippingFee = 50
+    const actual = 100
+
+    const total = totalPayment(isUsePoint, discount, subTotal, shippingFee)
+
+    expect(total).to.equal(actual)
+  })
+
+  it('ต้องการเห็น เงินทั้งหมด 75 บาท จากราคารวมสินค้าทั้งหมด 100 บาท และค่าขนส่ง 50 บาท โดยใช้ 150 แต้ม (ส่วนลด 75 บาท)', () => {
+    const isUsePoint = true
+    const discount = 75 // 150 points = 75.00 THB
+    const subTotal = 100
+    const shippingFee = 50
+    const actual = 75
+
+    const total = totalPayment(isUsePoint, discount, subTotal, shippingFee)
+
+    expect(total).to.equal(actual)
+  })
+
+  it('ต้องการเห็น เงินทั้งหมดเท่ากับค่าขนส่ง เมื่อส่วนลดเท่ากับราคารวมสินค้า (กันพลาด — ปกติ point-service จะไม่ให้เกิดขึ้น)', () => {
+    const isUsePoint = true
+    const discount = 100
     const subTotal = 100
     const shippingFee = 50
     const actual = 50
 
-    const total = totalPayment(isUsePoint, pointsUsed, subTotal, shippingFee)
+    const total = totalPayment(isUsePoint, discount, subTotal, shippingFee)
 
     expect(total).to.equal(actual)
-  })
-
-  it('ต้องการเห็น เงินทั้งหมด 50 บาท จากราคารวมสินค้าทั้งหมด 100 บาท และค่าขนส่ง 50 บาท โดยใช้ส่วนลดจากแต้ม 150 แต้ม', () => {
-    const isUsePoint = true
-    const pointsUsed = 150
-    const subTotal = 100
-    const shippingFee = 50
-    const actual = 50
-
-    const total = totalPayment(isUsePoint, pointsUsed, subTotal, shippingFee)
-
-    expect(total).to.equal(actual)
-  })
-})
-
-describe('Utils > total price > Point Burn', () => {
-  it('ต้องการเห็น แต้มที่ใช้ 100 แต้ม จากราคารวมสินค้าทั้งหมด 100 บาท โดยมีแต้มทั้งหมด 100 แต้ม', () => {
-    const point = 100
-    const subTotal = 100
-    const actual = 100
-
-    const pointUsed = pointBurn(point, subTotal)
-
-    expect(pointUsed).to.equal(actual)
-  })
-
-  it('ต้องการเห็น แต้มที่ใช้ 100 แต้ม จากราคารวมสินค้าทั้งหมด 100 บาท โดยมีแต้มทั้งหมด 200 แต้ม', () => {
-    const point = 100
-    const subTotal = 100
-    const actual = 100
-
-    const pointUsed = pointBurn(point, subTotal)
-
-    expect(pointUsed).to.equal(actual)
-  })
-
-  it('ต้องการเห็น แต้มที่ใช้ 50 แต้ม จากราคารวมสินค้าทั้งหมด 100 บาท โดยมีแต้มทั้งหมด 50 แต้ม', () => {
-    const point = 50
-    const subTotal = 100
-    const actual = 50
-
-    const pointUsed = pointBurn(point, subTotal)
-
-    expect(pointUsed).to.equal(actual)
   })
 })

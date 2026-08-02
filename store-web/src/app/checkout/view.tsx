@@ -1,5 +1,6 @@
 'use client'
 
+import Discount from '@/app/checkout/components/discount'
 import OrderList from '@/app/checkout/components/order-list'
 import OrderSummary from '@/app/checkout/components/order-summary'
 import PaymentMethod from '@/app/checkout/components/payment-method'
@@ -88,7 +89,7 @@ const CheckoutView = () => {
                 <PaymentMethod />
               </div>
               <div className="px-3 md:w-5/12">
-                {/* <Discount /> */}
+                <Discount />
                 <OrderSummary />
                 <Button
                   id="payment-now-btn"
