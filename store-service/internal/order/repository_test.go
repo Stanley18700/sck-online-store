@@ -29,12 +29,12 @@ func Test_OrderRepository(t *testing.T) {
 		orderDetail := order.OrderDetail{
 			ShippingMethodID: 1,
 			PaymentMethodID:  1,
-			SubTotalPrice:    465.811034,
+			SubTotalPrice:    436.67356,
 			DiscountPrice:    0,
-			TotalPrice:       515.811034,
+			TotalPrice:       486.67356,
 			ShippingFee:      50,
 			BurnPoint:        0,
-			EarnPoint:        4,
+			EarnPoint:        8,
 		}
 
 		actualId, err := repository.CreateOrder(context.Background(), uid, orderDetail)

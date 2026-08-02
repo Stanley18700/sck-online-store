@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func Test_GetCart_Should_be_Have_Data_and_Receive_Point_9(t *testing.T) {
+func Test_GetCart_Should_be_Have_Data_and_Receive_Point_8(t *testing.T) {
 	expected := cart.CartResult{
 		Carts: []cart.CartDetail{
 			{
@@ -21,8 +21,8 @@ func Test_GetCart_Should_be_Have_Data_and_Receive_Point_9(t *testing.T) {
 				Quantity:     1,
 				Name:         "43 Piece dinner Set",
 				Price:        12.95,
-				PriceTHB:     465.81,
-				PriceFullTHB: 465.811034,
+				PriceTHB:     436.67,
+				PriceFullTHB: 436.67356,
 				Image:        "/43_Piece_dinner_Set.png",
 				Stock:        10,
 				Brand:        "CoolKidz",
@@ -30,9 +30,9 @@ func Test_GetCart_Should_be_Have_Data_and_Receive_Point_9(t *testing.T) {
 		},
 		Summary: cart.CartSummary{
 			TotalPrice:        12.95,
-			TotalPriceTHB:     465.81,
-			TotalPriceFullTHB: 465.811034,
-			ReceivePoint:      9,
+			TotalPriceTHB:     436.67,
+			TotalPriceFullTHB: 436.67356,
+			ReceivePoint:      8,
 		},
 	}
 
@@ -56,7 +56,7 @@ func Test_GetCart_Should_be_Have_Data_and_Receive_Point_9(t *testing.T) {
 	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
 
 	mockPointInterface := new(mockPointInterface)
-	mockPointInterface.On("CalculatePoint", mock.Anything, 465.81).Return(point.TotalPoint{Point: 9}, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 436.67).Return(point.TotalPoint{Point: 8}, nil)
 
 	cartService := cart.CartService{
 		CartRepository: mockCartRepository,
@@ -87,7 +87,7 @@ func Test_GetCart_Should_be_Empty(t *testing.T) {
 	assert.Equal(t, nil, err)
 }
 
-func Test_AddCart_Input_Submitted_First_Product_Should_be_Have_1_Quantity_and_Receive_Point_86(t *testing.T) {
+func Test_AddCart_Input_Submitted_First_Product_Should_be_Have_1_Quantity_and_Receive_Point_80(t *testing.T) {
 	expected := cart.CartResult{
 		Carts: []cart.CartDetail{
 			{
@@ -97,8 +97,8 @@ func Test_AddCart_Input_Submitted_First_Product_Should_be_Have_1_Quantity_and_Re
 				Quantity:     1,
 				Name:         "Balance Training Bicycle",
 				Price:        119.95,
-				PriceTHB:     4314.6,
-				PriceFullTHB: 4314.597182,
+				PriceTHB:     4044.71,
+				PriceFullTHB: 4044.709922,
 				Image:        "/Balance_Training_Bicycle.png",
 				Stock:        100,
 				Brand:        "SportsFun",
@@ -106,9 +106,9 @@ func Test_AddCart_Input_Submitted_First_Product_Should_be_Have_1_Quantity_and_Re
 		},
 		Summary: cart.CartSummary{
 			TotalPrice:        119.95,
-			TotalPriceTHB:     4314.6,
-			TotalPriceFullTHB: 4314.597182,
-			ReceivePoint:      86,
+			TotalPriceTHB:     4044.71,
+			TotalPriceFullTHB: 4044.709922,
+			ReceivePoint:      80,
 		},
 	}
 	submitedCart := cart.SubmitedCart{
@@ -138,7 +138,7 @@ func Test_AddCart_Input_Submitted_First_Product_Should_be_Have_1_Quantity_and_Re
 	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
 
 	mockPointInterface := new(mockPointInterface)
-	mockPointInterface.On("CalculatePoint", mock.Anything, 4314.6).Return(point.TotalPoint{Point: 86}, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 4044.71).Return(point.TotalPoint{Point: 80}, nil)
 
 	cartService := cart.CartService{
 		CartRepository: mockCartRepository,
@@ -150,7 +150,7 @@ func Test_AddCart_Input_Submitted_First_Product_Should_be_Have_1_Quantity_and_Re
 	assert.Equal(t, nil, err)
 }
 
-func Test_AddCart_Input_Submitted_More_Product_Should_be_Have_2_Quantity_and_Receive_Point_172(t *testing.T) {
+func Test_AddCart_Input_Submitted_More_Product_Should_be_Have_2_Quantity_and_Receive_Point_161(t *testing.T) {
 	expected := cart.CartResult{
 		Carts: []cart.CartDetail{
 			{
@@ -160,8 +160,8 @@ func Test_AddCart_Input_Submitted_More_Product_Should_be_Have_2_Quantity_and_Rec
 				Quantity:     2,
 				Name:         "Balance Training Bicycle",
 				Price:        119.95,
-				PriceTHB:     4314.6,
-				PriceFullTHB: 4314.597182,
+				PriceTHB:     4044.71,
+				PriceFullTHB: 4044.709922,
 				Image:        "/Balance_Training_Bicycle.png",
 				Stock:        100,
 				Brand:        "SportsFun",
@@ -169,9 +169,9 @@ func Test_AddCart_Input_Submitted_More_Product_Should_be_Have_2_Quantity_and_Rec
 		},
 		Summary: cart.CartSummary{
 			TotalPrice:        239.9,
-			TotalPriceTHB:     8629.19,
-			TotalPriceFullTHB: 8629.194364,
-			ReceivePoint:      172,
+			TotalPriceTHB:     8089.42,
+			TotalPriceFullTHB: 8089.419843,
+			ReceivePoint:      161,
 		},
 	}
 	submitedCart := cart.SubmitedCart{
@@ -206,7 +206,7 @@ func Test_AddCart_Input_Submitted_More_Product_Should_be_Have_2_Quantity_and_Rec
 	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
 
 	mockPointInterface := new(mockPointInterface)
-	mockPointInterface.On("CalculatePoint", mock.Anything, 8629.19).Return(point.TotalPoint{Point: 172}, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 8089.42).Return(point.TotalPoint{Point: 161}, nil)
 
 	cartService := cart.CartService{
 		CartRepository: mockCartRepository,
@@ -218,7 +218,7 @@ func Test_AddCart_Input_Submitted_More_Product_Should_be_Have_2_Quantity_and_Rec
 	assert.Equal(t, nil, err)
 }
 
-func Test_UpdateCart_Input_Submitted_Quantity_2_Should_be_Have_2_Quantity_and_Receive_Point_18(t *testing.T) {
+func Test_UpdateCart_Input_Submitted_Quantity_2_Should_be_Have_2_Quantity_and_Receive_Point_17(t *testing.T) {
 	expected := cart.CartResult{
 		Carts: []cart.CartDetail{
 			{
@@ -228,8 +228,8 @@ func Test_UpdateCart_Input_Submitted_Quantity_2_Should_be_Have_2_Quantity_and_Re
 				Quantity:     2,
 				Name:         "43 Piece dinner Set",
 				Price:        12.95,
-				PriceTHB:     465.81,
-				PriceFullTHB: 465.811034,
+				PriceTHB:     436.67,
+				PriceFullTHB: 436.67356,
 				Image:        "/43_Piece_dinner_Set.png",
 				Stock:        200,
 				Brand:        "CoolKidz",
@@ -237,9 +237,9 @@ func Test_UpdateCart_Input_Submitted_Quantity_2_Should_be_Have_2_Quantity_and_Re
 		},
 		Summary: cart.CartSummary{
 			TotalPrice:        25.9,
-			TotalPriceTHB:     931.62,
-			TotalPriceFullTHB: 931.622068,
-			ReceivePoint:      18,
+			TotalPriceTHB:     873.35,
+			TotalPriceFullTHB: 873.347119,
+			ReceivePoint:      17,
 		},
 	}
 	submitedCart := cart.SubmitedCart{
@@ -268,7 +268,7 @@ func Test_UpdateCart_Input_Submitted_Quantity_2_Should_be_Have_2_Quantity_and_Re
 	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
 
 	mockPointInterface := new(mockPointInterface)
-	mockPointInterface.On("CalculatePoint", mock.Anything, 931.62).Return(point.TotalPoint{Point: 18}, nil)
+	mockPointInterface.On("CalculatePoint", mock.Anything, 873.35).Return(point.TotalPoint{Point: 17}, nil)
 
 	cartService := cart.CartService{
 		CartRepository: mockCartRepository,

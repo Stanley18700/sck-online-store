@@ -38,7 +38,7 @@ That room is point-service. Everyone else must knock on its door and ask.
  (the website)          (the shop backend)          (the CALCULATOR)
 ─────────────          ──────────────────          ─────────────────
  shows the number  ──►  asks point-service  ──►     amount ÷ 50
- never calculates       never calculates            answers: { "point": 86 }
+ never calculates       never calculates            answers: { "point": 80 }
 ```
 
 ### The calculator (point-service)
@@ -48,10 +48,11 @@ That room is point-service. Everyone else must knock on its door and ask.
   → `POINT_RATE = 50`
 - The whole rule is **two lines**:
   [point.service.ts — line 20](../point-service/src/point/point.service.ts#L20)
-  → take the amount, divide by 50, round down. Negative amount → 0 points.
+  → take the amount, divide by 50, round down. A negative amount gives **negative** points
+  (see the note in section 4).
 - Other services call it through this door:
   [point.controller.ts — line 23](../point-service/src/point/point.controller.ts#L23)
-  → `GET /api/v1/point/calculate?amount=4314.6` answers `{ "point": 86 }`
+  → `GET /api/v1/point/calculate?amount=4044.71` answers `{ "point": 80 }`
 
 ### The messenger (store-service)
 
@@ -131,18 +132,23 @@ The instructor planted 3 bugs on purpose. One commit message even says it direct
 > The git history keeps the whole trail on purpose: *found → fixed → rule learned →
 > restored*. That trail is our evidence that we detected them.
 
-### Trap 1: Product 3 shows a minus price and 0 points
+### Trap 1: Product 3 shows a minus price AND minus points
 
 The website code **flips the price to negative** after receiving it from the API
-(only on the detail page). The negative price then goes to the calculator, and the
-calculator correctly answers 0 for negative amounts. So "0 Points" is not the real bug —
-it is a *symptom*.
+(only on the detail page). That negative price is then sent to the calculator, so the points
+go negative too. Today product 3 shows **-฿841.31** and **-17 Points**.
 
-**How we caught it:** the product **list** page shows the correct price (+฿897.45).
+**How we caught it:** the product **list** page shows the correct price (+฿841.31).
 Only the **detail** page shows minus. Same product, two different prices → the bug must be
 in the detail page code.
 **Trail:** fixed in `6abf049` → restored in `3a45d19`. Live at
 [product-detail.ts — line 27](../store-web/src/services/product-detail.ts#L27).
+
+> **Note (commit `a90052d`):** at first the trap only showed a minus *price*, because the
+> calculator had a guard that turned any negative amount into 0 points. That guard was
+> removed, so the trap now shows a minus on **both** price and points — exactly what the
+> instructor's original commit message asked for: *"show minus sign(-) for price **and
+> point**."* Our test data follows the same rule now: `-599.999` expects **-12**, not 0.
 
 ### Trap 2: Product 7's page always shows an error
 
@@ -166,7 +172,8 @@ Also good to know (we never changed these — they are valid test data):
 - 8 products at 1.39/2.78 USD that sit exactly on the 50-baht point boundary
 - None of our test suites uses product 3, 7, or 8 — so restoring the traps breaks no test.
 
-> สรุป: อาจารย์ซ่อนบั๊กไว้ 3 ตัวเพื่อเป็น "เครื่องหมาย" ไม่ใช่ให้แก้ — เราเจอครบ แก้ไปแล้ว
+> สรุป: อาจารย์ซ่อนบั๊กไว้ 3 ตัวเพื่อเป็น "เครื่องหมาย" ไม่ใช่ให้แก้ — สินค้า 3 ตอนนี้
+> แสดงทั้งราคาและแต้มติดลบ (-฿841.31 / -17 แต้ม) ตามที่อาจารย์ตั้งใจ — เราเจอครบ แก้ไปแล้ว
 > แต่พอทราบกติกาก็ revert คืนทั้งหมด ตอนนี้บั๊กกลับมาทำงานเหมือนเดิม และ git history
 > เก็บหลักฐานไว้ครบว่าเราเจออะไรบ้าง
 
