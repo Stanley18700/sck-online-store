@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Point } from './point.entity';
 import { CreatePointDto } from './point.dto';
-import { POINT_RATE } from './point.constant';
+import { POINT_RATE, BURN_RATE } from './point.constant';
 import { logs, SeverityNumber } from '@opentelemetry/api-logs';
 
 const otelLogger = logs.getLogger('point-service');
@@ -33,6 +33,42 @@ export class PointService {
       },
     });
     return point;
+  }
+
+  calculateDiscount(
+    points: number,
+    subtotal: number,
+  ): { burn_point: number; discount: number } {
+    const safePoints =
+      !Number.isFinite(points) || points < 0 ? 0 : Math.floor(points);
+    const safeSubtotal =
+      !Number.isFinite(subtotal) || subtotal < 0 ? 0 : subtotal;
+
+    // Points burn in pairs (2 points = 1.00 THB); an odd point stays unspent.
+    // The discount never exceeds the subtotal - shipping is not discountable.
+    const maxByBalance = BURN_RATE * Math.floor(safePoints / BURN_RATE);
+    const maxBySubtotal = BURN_RATE * Math.floor(safeSubtotal);
+    const burnPoint = Math.min(maxByBalance, maxBySubtotal);
+    const discount = burnPoint / BURN_RATE;
+
+    this.logger.log(
+      `Discount calculated: points=${points}, subtotal=${subtotal}, burn_point=${burnPoint}, discount=${discount}`,
+    );
+    otelLogger.emit({
+      severityNumber: SeverityNumber.INFO,
+      severityText: 'INFO',
+      body: 'Discount calculated',
+      attributes: {
+        log_type: 'business',
+        event: 'discount_calculated',
+        entity_type: 'point',
+        points: points,
+        subtotal: subtotal,
+        burn_point: burnPoint,
+        discount: discount,
+      },
+    });
+    return { burn_point: burnPoint, discount: discount };
   }
 
   async getPoint(): Promise<Point[]> {

@@ -144,6 +144,97 @@ describe('PointService', () => {
     expect(result).toEqual(expected);
   });
 
+  it('Discount => Should return 1.00 THB from 2 points on subtotal 500 (equal to the unit)', () => {
+    // arrange
+    const points = 2;
+    const subtotal = 500;
+    const expected = { burn_point: 2, discount: 1 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should return 0.00 THB from 1 point (less than the unit, single point stays)', () => {
+    // arrange
+    const points = 1;
+    const subtotal = 500;
+    const expected = { burn_point: 0, discount: 0 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should return 80.00 THB from 160 points on subtotal 500 (more than the unit)', () => {
+    // arrange
+    const points = 160;
+    const subtotal = 500;
+    const expected = { burn_point: 160, discount: 80 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should burn 2 of 3 points for 1.00 THB (odd point remains)', () => {
+    // arrange
+    const points = 3;
+    const subtotal = 500;
+    const expected = { burn_point: 2, discount: 1 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should cap the discount at the subtotal (200 points on subtotal 50.25 burns 100)', () => {
+    // arrange
+    const points = 200;
+    const subtotal = 50.25;
+    const expected = { burn_point: 100, discount: 50 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should return 0 from 0 points', () => {
+    // arrange
+    const points = 0;
+    const subtotal = 500;
+    const expected = { burn_point: 0, discount: 0 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
+  it('Discount => Should return 0 from negative points', () => {
+    // arrange
+    const points = -10;
+    const subtotal = 500;
+    const expected = { burn_point: 0, discount: 0 };
+
+    // act
+    const result = service.calculateDiscount(points, subtotal);
+
+    // assert
+    expect(result).toEqual(expected);
+  });
+
   it('Find => should return an array of point', async () => {
     //arrange
     const point = {

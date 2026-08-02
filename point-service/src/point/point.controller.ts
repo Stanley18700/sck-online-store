@@ -56,6 +56,42 @@ export class PointController {
     return { point: this.pointService.calculatePoint(parsedAmount) };
   }
 
+  @Get('discount')
+  calculateDiscount(
+    @Query('points') points: string,
+    @Query('subtotal') subtotal: string,
+  ) {
+    this.logger.log(
+      `GET /point/discount request received: points=${points}, subtotal=${subtotal}`,
+    );
+    otelLogger.emit({
+      severityNumber: SeverityNumber.INFO,
+      severityText: 'INFO',
+      body: 'Calculate discount request received',
+      attributes: {
+        log_type: 'business',
+        event: 'calculate_discount_request',
+        entity_type: 'point',
+        points: points,
+        subtotal: subtotal,
+      },
+    });
+    const parsedPoints = Number(points);
+    if (points === undefined || points === '' || isNaN(parsedPoints)) {
+      this.logger.error(`GET /point/discount invalid points: ${points}`);
+      throw new HttpException('points must be a number', HttpStatus.BAD_REQUEST);
+    }
+    const parsedSubtotal = Number(subtotal);
+    if (subtotal === undefined || subtotal === '' || isNaN(parsedSubtotal)) {
+      this.logger.error(`GET /point/discount invalid subtotal: ${subtotal}`);
+      throw new HttpException(
+        'subtotal must be a number',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return this.pointService.calculateDiscount(parsedPoints, parsedSubtotal);
+  }
+
   @Get()
   async getPoint() {
     this.logger.log('GET /point request received');
