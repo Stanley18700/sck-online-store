@@ -246,9 +246,9 @@ func (orderService OrderService) GetOrderSummary(ctx context.Context, orderNumbe
 
 	var productList []OrderSummaryProduct
 	for _, orderProduct := range orderedProducts {
-		totalPrice := orderProduct.Price * float64(orderProduct.Quantity)
-
-		totalPriceTHB := common.ConvertToThb(totalPrice)
+		// Same helper the cart uses, so an invoice line always matches what the
+		// customer saw on the cart and checkout screens.
+		totalPriceTHB := common.LineTotal(orderProduct.Price, orderProduct.Quantity)
 		priceTHB := common.ConvertToThb(orderProduct.Price)
 		product := OrderSummaryProduct{
 			ProductBrand:  orderProduct.ProductBrand,

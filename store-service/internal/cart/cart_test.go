@@ -1,9 +1,10 @@
-﻿package cart_test
+package cart_test
 
 import (
 	"context"
 	"database/sql"
 	"store-service/internal/cart"
+	"store-service/internal/common"
 	"store-service/internal/point"
 	"testing"
 
@@ -23,9 +24,12 @@ func Test_GetCart_Should_be_Have_Data_and_Receive_Point_8(t *testing.T) {
 				Price:        12.95,
 				PriceTHB:     436.67,
 				PriceFullTHB: 436.67356,
-				Image:        "/43_Piece_dinner_Set.png",
-				Stock:        10,
-				Brand:        "CoolKidz",
+				// qty 1 -> ConvertToThb(12.95 * 1)
+				LineTotalTHB:     436.67,
+				LineTotalFullTHB: 436.67356,
+				Image:            "/43_Piece_dinner_Set.png",
+				Stock:            10,
+				Brand:            "CoolKidz",
 			},
 		},
 		Summary: cart.CartSummary{
@@ -99,9 +103,12 @@ func Test_AddCart_Input_Submitted_First_Product_Should_be_Have_1_Quantity_and_Re
 				Price:        119.95,
 				PriceTHB:     4044.71,
 				PriceFullTHB: 4044.709922,
-				Image:        "/Balance_Training_Bicycle.png",
-				Stock:        100,
-				Brand:        "SportsFun",
+				// qty 1 -> ConvertToThb(119.95 * 1)
+				LineTotalTHB:     4044.71,
+				LineTotalFullTHB: 4044.709922,
+				Image:            "/Balance_Training_Bicycle.png",
+				Stock:            100,
+				Brand:            "SportsFun",
 			},
 		},
 		Summary: cart.CartSummary{
@@ -162,9 +169,12 @@ func Test_AddCart_Input_Submitted_More_Product_Should_be_Have_2_Quantity_and_Rec
 				Price:        119.95,
 				PriceTHB:     4044.71,
 				PriceFullTHB: 4044.709922,
-				Image:        "/Balance_Training_Bicycle.png",
-				Stock:        100,
-				Brand:        "SportsFun",
+				// qty 2 -> ConvertToThb(119.95 * 2), rounded once
+				LineTotalTHB:     8089.42,
+				LineTotalFullTHB: 8089.419843,
+				Image:            "/Balance_Training_Bicycle.png",
+				Stock:            100,
+				Brand:            "SportsFun",
 			},
 		},
 		Summary: cart.CartSummary{
@@ -230,9 +240,12 @@ func Test_UpdateCart_Input_Submitted_Quantity_2_Should_be_Have_2_Quantity_and_Re
 				Price:        12.95,
 				PriceTHB:     436.67,
 				PriceFullTHB: 436.67356,
-				Image:        "/43_Piece_dinner_Set.png",
-				Stock:        200,
-				Brand:        "CoolKidz",
+				// qty 2 -> ConvertToThb(12.95 * 2), rounded once
+				LineTotalTHB:     873.35,
+				LineTotalFullTHB: 873.347119,
+				Image:            "/43_Piece_dinner_Set.png",
+				Stock:            200,
+				Brand:            "CoolKidz",
 			},
 		},
 		Summary: cart.CartSummary{
@@ -303,4 +316,65 @@ func Test_UpdateCart_Input_Submitted_Quantity_0_Should_be_Have_0_Quantity_and_Re
 
 	assert.Equal(t, expected, actual)
 	assert.Equal(t, nil, err)
+}
+
+func Test_GetCart_Line_Total_Should_be_Rounded_Once_Not_Twice(t *testing.T) {
+	// Regression: the UI used to render product_price_thb * quantity, which rounds
+	// 12.95 USD to 436.67 THB first and only then multiplies. That drifts a satang
+	// below the order total.
+	uid := 1
+	res := []cart.CartDetail{
+		{
+			ID: 1, UserID: 1, ProductID: 5, Quantity: 3,
+			Name: "Sleeping Queens Board Game", Price: 12.95, Stock: 10,
+		},
+	}
+	mockCartRepository := new(mockCartRepository)
+	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
+
+	mockPointInterface := new(mockPointInterface)
+	mockPointInterface.On("CalculatePoint", mock.Anything, mock.Anything).Return(point.TotalPoint{Point: 26}, nil)
+
+	cartService := cart.CartService{
+		CartRepository: mockCartRepository,
+		PointService:   mockPointInterface,
+	}
+	actual, err := cartService.GetCart(context.Background(), uid)
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 436.67, actual.Carts[0].PriceTHB)
+	assert.Equal(t, 1310.02, actual.Carts[0].LineTotalTHB)
+	assert.NotEqual(t, 1310.01, actual.Carts[0].LineTotalTHB, "line total must not be the round-then-multiply value")
+}
+
+func Test_GetCart_Subtotal_Should_be_Sum_Of_Displayed_Line_Totals(t *testing.T) {
+	// The subtotal has to equal what a customer gets by adding up the lines on
+	// screen, otherwise the cart shows numbers that do not add up.
+	uid := 1
+	res := []cart.CartDetail{
+		{ID: 1, UserID: 1, ProductID: 1, Quantity: 5, Name: "Balance Training Bicycle", Price: 119.95, Stock: 100},
+		{ID: 2, UserID: 1, ProductID: 4, Quantity: 3, Name: "Hoppity Ball 26 inch", Price: 29.95, Stock: 12},
+	}
+	mockCartRepository := new(mockCartRepository)
+	mockCartRepository.On("GetCartDetail", mock.Anything, uid).Return(res, nil)
+
+	mockPointInterface := new(mockPointInterface)
+	mockPointInterface.On("CalculatePoint", mock.Anything, mock.Anything).Return(point.TotalPoint{Point: 465}, nil)
+
+	cartService := cart.CartService{
+		CartRepository: mockCartRepository,
+		PointService:   mockPointInterface,
+	}
+	actual, err := cartService.GetCart(context.Background(), uid)
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 20223.55, actual.Carts[0].LineTotalTHB)
+	assert.Equal(t, 3029.74, actual.Carts[1].LineTotalTHB)
+
+	sumOfLines := 0.0
+	for _, c := range actual.Carts {
+		sumOfLines = sumOfLines + c.LineTotalTHB
+	}
+	assert.Equal(t, common.Round(sumOfLines, 2), actual.Summary.TotalPriceTHB)
+	assert.Equal(t, 23253.29, actual.Summary.TotalPriceTHB)
 }

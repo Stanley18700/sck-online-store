@@ -12,6 +12,10 @@ export type ProductDetailInCart = {
   product_price: number
   product_price_thb: number
   product_price_full_thb: number
+  // Price x quantity rounded once by the backend. Display this instead of
+  // multiplying product_price_thb, which is already rounded.
+  line_total_thb: number
+  line_total_full_thb: number
   product_image: string
   stock: number
   product_brand: string
