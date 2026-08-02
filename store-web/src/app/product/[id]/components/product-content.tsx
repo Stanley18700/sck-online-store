@@ -89,7 +89,7 @@ const ProductContent = (product: ProductDetailType) => {
       >
         {convertCurrency(product.product_price_thb, 'THB')}
       </Text>
-      {receivePoint !== null && (
+      {/* {receivePoint !== null && (
         <Text
           id="product-detail-point"
           size="md"
@@ -97,7 +97,7 @@ const ProductContent = (product: ProductDetailType) => {
         >
           {`${converNumber(receivePoint)} Points`}
         </Text>
-      )}
+      )} */}
 
       <form className="mt-6">
         <InputQuantity
